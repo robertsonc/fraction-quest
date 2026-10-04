@@ -8,10 +8,13 @@ iPad like an app and works offline. Live at <https://fraction-quest-606.pages.de
 | Path | What it is |
 | --- | --- |
 | `src/` | App sources: `body.html`, `style.css`, `glass.css`, and the script parts `core.js`, `st_a.js` … `st_d.js` |
+| `src/site/site.css` | Chrome shared by the side pages (tools, learn): tokens, top bar, buttons, fraction primitives, list cards |
+| `src/tools/` | Printable tools: one body fragment per sheet (`what-do-i-do.html`, `factors-gcf-lcm.html`, `simplified.html`), the list page `index.html`, and their shared `tools.css` / `tools.js` |
+| `src/learn/` | Concept animations: `simplify.html` (the 6/20 to 3/10 morph), the list page `index.html`, `learn.css`, and `learn.js` (tween engine and the simplify step machine) |
 | `fonts.css`, `sw.template.js` | Font-face declarations and the service-worker template that the build stamps with a version |
-| `build_cf.py` | Turns `src/` into `public/` (`index.html`, `app.js`, `app.css`, `sw.js`). Runs `node --check` on the bundle and refuses inline event handlers that the CSP would block |
-| `public/` | Exactly what gets deployed. Icons, fonts, `_headers`, and `manifest.webmanifest` are committed; the four generated files are not (see `.gitignore`) and are rebuilt on every deploy |
-| `wrangler.toml` | Pages project name and output directory. Single source of truth for the project name |
+| `build_cf.py` | Turns `src/` into `public/` (`index.html`, `app.js`, `app.css`, `sw.js`, `tools/`, `learn/`). Wraps each side-page fragment in a shared page shell (`SECTIONS`). Runs `node --check` on the scripts and refuses inline event handlers that the CSP would block |
+| `public/` | Exactly what gets deployed. Icons, fonts, `_headers`, and `manifest.webmanifest` are committed; the generated files (`index.html`, `app.js`, `app.css`, `sw.js`, `tools/`, `learn/`) are not (see `.gitignore`) and are rebuilt on every deploy |
+| `wrangler.toml` | Pages project name (`fraction-quest`) and output directory. Single source of truth for the project name. The hostname is `fraction-quest-606.pages.dev` because Cloudflare adds a suffix when `<name>.pages.dev` is already taken |
 | `package.json` | Pins the wrangler version used by CI and `deploy.sh` |
 | `.github/workflows/deploy.yml` | Build and deploy automation |
 
@@ -50,6 +53,35 @@ either rename it back in the Cloudflare dashboard or change the `branches:` filt
 
 Dependabot opens weekly PRs for the GitHub Actions and for wrangler. wrangler is pinned exactly in
 `package.json`, so each bump is a reviewed PR with a preview deploy rather than an implicit upgrade.
+
+## Printable tools
+
+`/tools/` lists one-page reference sheets, linked from the app footer. On screen they use the app's look; in print
+they are black on white, one letter page each, with no grade level anywhere. Pages serves each sheet at a clean URL
+(`/tools/what-do-i-do`), and the service worker caches them for offline use.
+
+To add a sheet: write a body fragment in `src/tools/<slug>.html` (copy an existing one; use `.card`, `.callout`,
+`.eq`, and `.frac` from `tools.css`), add a row to `TOOLS` in `build_cf.py`, add the slug to `_headers` as
+`no-cache`, link it from `src/tools/index.html`, and rebuild. Check the print result fits one page (browser Print
+preview, or Playwright `page.pdf`) before merging.
+
+## Learn pages (concept animations)
+
+`/learn/` holds short animations that teach one idea each, separate from the quest's eight stations. They show;
+nothing is scored. `/learn/simplify` is the first: a square cut into small pieces on one side, and the same amount
+made of bigger pieces on the other. The shaded columns fly across and grow. "Small steps" divides by the smallest
+number that works each round (2, then 3, …) and checks again; "One jump" divides once by the biggest number that
+goes into both. Any fraction smaller than one whole with a bottom up to 48 can be typed in.
+
+To add a concept page: write a fragment in `src/learn/<slug>.html`, add an `init<Name>()` in `learn.js` that
+returns early when its root element is missing, add a row to the learn section in `build_cf.py`, add the slug to
+`_headers` as `no-cache`, and link it from `src/learn/index.html`.
+
+## Writing style
+
+Copy is written for a student who is still learning the words. Say "top" and "bottom", "goes into", "left over",
+"simplified all the way", "the biggest number that goes into both". Use a formal term only on the page that
+teaches it (factors in Factor rainbows, primes in Prime trees, GCF and LCM on their tool sheet). Never name a grade.
 
 ## Working locally
 

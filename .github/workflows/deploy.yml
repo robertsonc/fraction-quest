@@ -27,15 +27,15 @@ jobs:
       pull-requests: write # preview-URL comment on pull requests
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -79,6 +79,9 @@ jobs:
             echo "::error::CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID must be set as repository secrets." >&2
             exit 1
           fi
+          # Read-only: shows the Pages projects (name and *.pages.dev hostname) this token can see, so a
+          # "project does not exist" failure below is diagnosable from the log without dashboard access.
+          npx wrangler pages project list
           # Project name and output directory come from wrangler.toml. The build output is not committed,
           # so the tree is always dirty from git's point of view; --commit-dirty silences that warning.
           npx wrangler pages deploy \
@@ -99,7 +102,7 @@ jobs:
 
       - name: Comment preview URL on the pull request
         if: github.event_name == 'pull_request' && steps.plan.outputs.deploy == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
           ALIAS_URL: ${{ steps.deploy.outputs.alias }}
@@ -112,7 +115,8 @@ jobs:
               marker,
               '### Cloudflare Pages preview',
               '',
-              `Branch \`${BRANCH}\` at commit ${context.sha.slice(0, 7)}.`,
+              // On pull_request events context.sha is the synthetic merge commit; report the branch head instead.
+              `Branch \`${BRANCH}\` at commit ${(context.payload.pull_request?.head?.sha ?? context.sha).slice(0, 7)}.`,
               '',
               `- Preview: ${DEPLOY_URL || '(URL not found in wrangler output; see the job summary)'}`,
               ALIAS_URL ? `- Branch alias: ${ALIAS_URL}` : null,

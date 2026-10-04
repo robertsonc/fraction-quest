@@ -1,0 +1,61 @@
+/* ================= learn: concept animations =================
+   One idea per page, shown with the same fraction tiles as the app (color = piece size) and a short
+   plain-language caption per step. Shared chrome and fraction primitives come from site.css. */
+:root{--slot:rgba(255,255,255,.5); --slot-line:rgba(70,92,150,.5); --chunk:#157A4B}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--slot:rgba(255,255,255,.06); --slot-line:rgba(190,205,255,.42); --chunk:#8BE3B1}
+}
+
+.lesson{background:var(--g-fill);border:1px solid var(--g-edge);border-radius:26px;box-shadow:var(--g-spec),var(--g-d1);
+  -webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur);padding:clamp(14px,3vw,26px)}
+.row{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin:0 0 12px}
+.row-label{font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-width:46px;min-height:44px;padding:4px 12px;border-radius:12px;font:inherit;font-weight:600;font-size:1rem;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--c-fill);border:1px solid var(--c-edge);box-shadow:var(--c-spec),0 0 0 1px var(--c-ring),var(--c-drop);transition:transform .12s ease}
+.chip:active{transform:translateY(1px)}
+.chip[aria-pressed="true"]{background:var(--tint);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 -2px 0 rgba(0,0,0,.18),var(--tint-glow)}
+.chip .frac{font-size:.82rem}
+.custom{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.custom label{display:inline-flex;align-items:center;gap:6px;font-size:.95rem;color:var(--ink-2)}
+.custom input{width:3.2em;min-height:40px;padding:4px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-solid);color:var(--ink);font:inherit;font-weight:700;font-size:1rem;text-align:center}
+.custom .btn{min-height:40px;padding:6px 14px}
+.msg{min-height:1.4em;margin:0 0 6px;font-family:var(--hand);font-size:1.15rem;color:var(--pen-red)}
+.msg:empty{display:none}
+
+.stage{background:var(--g-fill-hi);border:1px solid var(--g-edge);border-radius:20px;box-shadow:var(--g-spec),var(--g-d2);padding:12px 10px 8px;margin:4px 0 10px}
+.stage-svg{display:block;width:100%;overflow:visible}
+.caption{margin:6px 2px 2px;min-height:2.6em;font-size:clamp(1.25rem,2.4vw,1.5rem);line-height:1.35;color:var(--pen-blue);max-width:70ch}
+.caption.ink{animation:write .55s ease-out}
+@keyframes write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.eqline{display:flex;align-items:center;flex-wrap:wrap;gap:.3em .4em;font-weight:700;font-size:clamp(1.6rem,4vw,2.2rem);min-height:2.4em;margin:0 0 8px}
+.eqline .ops{display:inline-flex;flex-direction:column;align-items:center;justify-content:space-between;align-self:stretch;font-family:var(--hand);font-weight:400;font-size:.5em;color:var(--pen-blue);line-height:1;padding:.15em .1em;white-space:nowrap}
+.eqline .ops .sign{font-family:var(--sans);font-weight:700;font-size:1.5em;color:var(--ink)}
+.eqline .dim{opacity:.45}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.controls .btn:disabled{opacity:.45;cursor:not-allowed}
+.controls .spacer{flex:1}
+.hint{margin:0;color:var(--ink-3);font-size:.9rem}
+
+.words{margin:16px 0 0;padding:14px 18px;border-radius:18px;background:var(--g-fill-hi);border:1px solid var(--g-edge);box-shadow:var(--g-spec),var(--g-d1)}
+.words h2{margin:0 0 6px;font-size:1.1rem;text-transform:uppercase;letter-spacing:.02em;color:var(--pen-blue)}
+.words p{margin:.3em 0}
+.words a{color:var(--ink-2)}
+
+/* ---------- SVG ---------- */
+.stage-svg .tray{fill:var(--slot);stroke:var(--slot-line);stroke-width:1.5}
+.stage-svg .slot{fill:none;stroke:var(--slot-line);stroke-width:1.5;stroke-dasharray:5 5}
+.stage-svg .tile>rect:first-child{fill-opacity:.92}
+.stage-svg .tile>rect:nth-child(2){stroke:rgba(255,255,255,.6);stroke-width:1}
+.stage-svg .tlabel{font:600 13px var(--sans);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.stage-svg .tile.ghost{opacity:.22;transition:opacity .4s ease}
+.stage-svg .tile.pop{transform-box:fill-box;transform-origin:center;animation:snapIn .55s cubic-bezier(.2,.9,.25,1.25) both}
+.stage-svg .chunk{fill:none;stroke:var(--chunk);stroke-width:2.5;transform-box:fill-box;transform-origin:center;animation:chunkIn .3s ease-out both}
+.stage-svg .lnum{font:800 34px var(--sans);fill:var(--ink);text-anchor:middle}
+.stage-svg .lbar{stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.stage-svg .lhand{font:400 22px var(--hand);fill:var(--pen-blue);text-anchor:start}
+.stage-svg .larrow{fill:none;stroke:var(--ink-3);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.stage-svg .lname{font:600 14px var(--sans);fill:var(--ink-3);text-anchor:middle}
+@keyframes snapIn{0%{transform:scale(.72,.55);opacity:0}60%{transform:scale(1.03,1.1);opacity:1}100%{transform:none;opacity:1}}
+@keyframes chunkIn{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.stage-svg .tile.pop,.stage-svg .chunk,.caption.ink{animation:none}}

@@ -163,24 +163,24 @@
     const G = gcd(n, d), a = n / G, b = d / G, steps = [];
     const list = (arr) => arr.map((x) => (x === G ? `<mark>${x}</mark>` : x)).join(', ');
     if (G > 1) {
-      steps.push(`Find the greatest common factor. Factors of ${n}: ${list(divisors(n))}. Factors of ${d}: ${list(divisors(d))}. The biggest number in both lists is ${G}.`);
+      steps.push(`Find the biggest number that goes into both. Factors of ${n}: ${list(divisors(n))}. Factors of ${d}: ${list(divisors(d))}. The biggest number in both lists is ${G}.`);
       steps.push(`Divide the top and the bottom by ${G}: ${n} ÷ ${G} = ${a} and ${d} ÷ ${G} = ${b}. So ${frac(n, d)} = ${frac(a, b)}${b === 1 ? `, and anything over 1 is just itself: ${a}` : ''}.`);
     } else {
       steps.push(`${n} and ${d} share no factor except 1, so ${frac(n, d)} can't be simplified.`);
     }
     if (b > 1 && a > b) {
       const q = Math.floor(a / b), r = a % b;
-      steps.push(`The top is bigger than the bottom, so make a mixed number: ${a} ÷ ${b} = ${q} remainder ${r}. That's ${q} whole${q > 1 ? 's' : ''} and ${frac(r, b)} left over: ${showVal({ w: q, n: r, d: b })}.`);
+      steps.push(`The top is bigger than the bottom, so make a mixed number: ${a} ÷ ${b} = ${q} with ${r} left over. That's ${q} whole${q > 1 ? 's' : ''} and ${frac(r, b)} left over: ${showVal({ w: q, n: r, d: b })}.`);
     }
     return `<ol class="steps">${steps.map((s) => `<li>${s}</li>`).join('')}</ol>`;
   }
   const digitSum = (x) => String(x).split('').reduce((s, c) => s + Number(c), 0);
   function divClue(n, d) {
     if (n % 2 === 0 && d % 2 === 0) return `${n} and ${d} are both even, so 2 goes into both. Is there something even bigger that goes into both?`;
-    if (digitSum(n) % 3 === 0 && digitSum(d) % 3 === 0) return `The digits of ${n} add to ${digitSum(n)} and the digits of ${d} add to ${digitSum(d)}. Both are multiples of 3, so 3 goes into both. Anything bigger?`;
+    if (digitSum(n) % 3 === 0 && digitSum(d) % 3 === 0) return `The digits of ${n} add to ${digitSum(n)} and the digits of ${d} add to ${digitSum(d)}. 3 goes into both of those totals, so 3 goes into both numbers. Anything bigger?`;
     if (n % 5 === 0 && d % 5 === 0) return `${n} and ${d} both end in 0 or 5, so 5 goes into both. Anything bigger?`;
     if (gcd(n, d) > 1) return `2, 3 and 5 don't go into both. Try 7.`;
-    return `Test 2 (even?), 3 (digits add to a multiple of 3?) and 5 (ends in 0 or 5?). If none of them fits both, the fraction part may already be simplest.`;
+    return `Test 2 (even?), 3 (digits add up to 3, 6, 9, 12…?) and 5 (ends in 0 or 5?). If none of them fits both, the fraction part may already be simplified all the way.`;
   }
 
   const S7 = {
@@ -301,7 +301,7 @@
       this.asks.push(ask($('#s7-work'), {
         st: 'challenge',
         lead: 'Step 1: find the biggest number that goes into both.',
-        tpl: `Greatest common factor of ${n} and ${d}: [[g:Greatest common factor]]`,
+        tpl: `Biggest number that goes into both ${n} and ${d}: [[g:Biggest number that goes into both]]`,
         help: () => `Factors of ${Math.min(n, d)}: ${divisors(Math.min(n, d)).join(', ')}. Which of these also go into ${Math.max(n, d)}?`,
         check: (v) => {
           if (v.g === G) return { ok: true, msg: G > 1 ? `Yes, ${G}.` : 'Right, only 1. Nothing to divide.', sound: 'tick' };
@@ -332,7 +332,7 @@
         this.asks.push(ask($('#s7-work'), {
           st: 'challenge',
           lead: 'The top is bigger than the bottom. How many wholes, and what is left?',
-          tpl: `${a} ÷ ${b} = [[q:Wholes]] remainder [[r:Left over]]`,
+          tpl: `${a} ÷ ${b} = [[q:Wholes]] with [[r:Left over]] left over`,
           check: (v) => {
             if (v.q == null || v.r == null) return { invalid: true, msg: 'Fill in both boxes.' };
             if (v.q === q && v.r === r) return { ok: true, msg: 'Right.', sound: 'tick' };

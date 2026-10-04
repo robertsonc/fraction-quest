@@ -179,7 +179,7 @@
       const { n, d } = this;
       const a = ask($('#s1-work'), {
         st: 'pieces',
-        lead: this.hist.length ? `Now it's ${frac(n, d)}. Snap again, or is it in simplest form?` : `What chunk size fits ${frac(n, d)}?`,
+        lead: this.hist.length ? `Now it's ${frac(n, d)}. Snap again, or is it simplified all the way?` : `What chunk size fits ${frac(n, d)}?`,
         tpl: 'Chunks of [[g:Chunk size]] pieces',
         button: 'Snap',
         check: (v) => this.checkChunk(v.g),
@@ -206,7 +206,7 @@
       const pa = ask($('#s1-work'), {
         st: 'pieces',
         lead: `Prove it: how many groups of ${g} fit into ${num}, and how many are left over?`,
-        tpl: `${num} ÷ ${g} = [[q:Groups]] remainder [[r:Left over]]`,
+        tpl: `${num} ÷ ${g} = [[q:Groups]] with [[r:Left over]] left over`,
         check: (v) => {
           if (v.q == null || v.r == null) return { invalid: true, msg: 'Fill in both boxes.' };
           if (v.q === q && v.r === r) return { ok: true, msg: `Right. ${g} × ${q} = ${g * q}, with ${r} left over. A leftover means ${g} doesn't fit evenly.`, sound: 'tick' };
@@ -423,7 +423,7 @@
       $('#s3-eq').innerHTML = '';
       $('#s3-work').innerHTML = '';
       this.draw();
-      note('#s3-note', `Build both rainbows by finding factor pairs. Every number is 1 × itself, so those are already in. Start testing at 2.`);
+      note('#s3-note', `Build both rainbows by finding partners. Every number is 1 × itself, so those are already in. Start testing at 2.`);
       this.prompt();
     },
     onShow() { this.draw(); },
@@ -459,7 +459,7 @@
       const pa = ask($('#s3-work'), {
         st: 'rainbow',
         lead: `Prove it: ${X} ÷ ${k} leaves something over.`,
-        tpl: `${X} ÷ ${k} = [[q:Groups]] remainder [[r:Left over]]`,
+        tpl: `${X} ÷ ${k} = [[q:Groups]] with [[r:Left over]] left over`,
         check: (v) => {
           if (v.q == null || v.r == null) return { invalid: true, msg: 'Fill in both boxes.' };
           if (v.q === q && v.r === r) return { ok: true, msg: `Right, ${r} left over, so ${k} is not a factor.`, sound: 'tick' };
@@ -505,7 +505,7 @@
         st: 'rainbow',
         lead: `Divide the top and the bottom by ${G}.`,
         tpl: `${frac(n, d)} = [[frac:a,b]]`,
-        check: checkFrac(n, d, G === 1 ? `Right. The only common factor is 1, so ${frac(n, d)} was already simplest.` : `Yes! One jump to simplest form.`),
+        check: checkFrac(n, d, G === 1 ? `Right. The only number that goes into both is 1, so ${frac(n, d)} was already simplified all the way.` : `Yes! One jump and it's simplified all the way.`),
         onOk: () => {
           if (tok !== this.tok) return;
           this.phase = 'done';

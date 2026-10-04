@@ -29,14 +29,17 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   if (req.mode === 'navigate') {
-    // Page: try the network first (so updates show up), fall back to the cached page offline.
+    // Page: try the network first (so updates show up), fall back to the cached copy of that page offline,
+    // then to the app's front page. Each page is cached under its own URL (the app at ./, tools under ./tools/).
     event.respondWith(
       fromNetwork(req, 3500)
         .then((res) => {
-          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put('./', copy)); }
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); }
           return res;
         })
-        .catch(() => caches.match('./').then((hit) => hit || Response.error())),
+        .catch(() => caches.match(req, { ignoreSearch: true })
+          .then((hit) => hit || caches.match('./'))
+          .then((hit) => hit || Response.error())),
     );
     return;
   }

@@ -3,6 +3,8 @@ public/index.html
 public/app.js
 public/app.css
 public/sw.js
+public/tools/
+public/learn/
 .check.js
 
 # Node / wrangler
