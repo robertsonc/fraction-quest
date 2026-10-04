@@ -127,3 +127,20 @@ body::after{
 @media (max-width:520px){.tool{grid-template-columns:auto 1fr}.tool .go{grid-column:2}}
 .fine{margin:18px 0 0;text-align:center;color:var(--ink-3);font-size:.9rem}
 .fine a{color:var(--ink-2)}
+
+/* ---------- start page: two doors ---------- */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+@media (max-width:640px){.doors{grid-template-columns:1fr}}
+.door{--c:var(--pen-blue);display:flex;flex-direction:column;gap:10px;padding:20px 22px 22px;border-radius:22px;background:var(--g-fill-hi);border:1px solid var(--g-edge);border-top:7px solid var(--c);box-shadow:var(--g-spec),var(--g-d2)}
+.door.green{--c:var(--pen-green)}
+.door h2{margin:0;font-size:clamp(1.4rem,3vw,1.8rem);line-height:1.1;color:var(--c)}
+.door .lead{margin:0;font-family:var(--hand);font-size:1.3rem;color:var(--pen-blue);line-height:1.25}
+.door .lead.green{color:var(--pen-green)}
+.door ul{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.door li a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;color:var(--ink);text-decoration:none;font-weight:600;
+  background:var(--c-fill);border:1px solid var(--c-edge);box-shadow:var(--c-spec),0 0 0 1px var(--c-ring)}
+.door li a:hover{color:var(--c)}
+.door li a small{font-weight:500;color:var(--ink-3);font-size:.85rem}
+.door li.sub a{margin-left:18px;padding:7px 12px;font-weight:500;font-size:.95rem}
+.door .big{margin-top:auto;align-self:flex-start;font-size:1.15rem;padding:12px 22px}
+.door p{margin:0;color:var(--ink-2)}

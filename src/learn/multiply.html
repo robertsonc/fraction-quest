@@ -1,0 +1,55 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".16"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="intro">
+  <h1>Multiplying: a part of a part</h1>
+  <p class="tag">× means "of". Shade one way, then the other.</p>
+</header>
+
+<section class="lesson" id="multiply" aria-label="Multiplying animation">
+  <div class="row">
+    <span class="row-label">Pick a problem</span>
+    <div class="chips presets"></div>
+  </div>
+  <div class="row">
+    <span class="row-label">Or your own</span>
+    <form class="custom" autocomplete="off">
+      <label>Top <input class="in-a" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="First top number"></label>
+      <label>Bottom <input class="in-b" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="First bottom number"></label>
+      <span class="opword">×</span>
+      <label>Top <input class="in-c" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Second top number"></label>
+      <label>Bottom <input class="in-d" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Second bottom number"></label>
+      <button class="btn" type="submit">Show it</button>
+    </form>
+  </div>
+  <p class="msg" role="status"></p>
+
+  <div class="stage">
+    <svg class="stage-svg" role="img" aria-label="One square shaded in strips one way and in rows the other way. The overlap is the answer."></svg>
+    <p class="caption hand" aria-live="polite"></p>
+    <div class="eqline" aria-live="polite"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary btn-next" type="button">Next step</button>
+    <button class="btn btn-play" type="button">Play it all</button>
+    <button class="btn btn-replay" type="button">Start over</button>
+    <span class="spacer"></span>
+    <p class="hint where"></p>
+  </div>
+</section>
+
+<aside class="words" aria-labelledby="h-words">
+  <h2 id="h-words">In words</h2>
+  <p>Shade the first fraction in strips. Shade the second fraction in rows across them. The part shaded both ways is the answer.</p>
+  <p>That is why the rule is top × top and bottom × bottom. Then ask: can I simplify?</p>
+  <p>Lesson 2, with wholes: <a href="./multiply-mixed">Multiplying mixed numbers</a>.</p>
+  <p>Paper version: <a href="../tools/what-do-i-do">Fractions: What Do I Do?</a></p>
+</aside>

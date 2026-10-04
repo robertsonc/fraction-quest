@@ -13,37 +13,37 @@
   <p class="tag">Same amount. Bigger pieces.</p>
 </header>
 
-<section class="lesson" aria-label="Simplifying animation">
+<section class="lesson" id="simplify" aria-label="Simplifying animation">
   <div class="row">
     <span class="row-label">Pick a fraction</span>
-    <div class="chips" id="simplify-presets"></div>
-    <form class="custom" id="simplify-custom" autocomplete="off">
-      <label>Top <input id="cust-top" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Top number"></label>
-      <label>Bottom <input id="cust-bot" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Bottom number"></label>
+    <div class="chips presets"></div>
+    <form class="custom" autocomplete="off">
+      <label>Top <input class="in-top" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Top number"></label>
+      <label>Bottom <input class="in-bot" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Bottom number"></label>
       <button class="btn" type="submit">Show it</button>
     </form>
   </div>
   <div class="row">
     <span class="row-label">How</span>
-    <div class="chips" id="simplify-mode">
+    <div class="chips modes">
       <button class="chip" type="button" data-mode="steps" aria-pressed="true">Small steps</button>
       <button class="chip" type="button" data-mode="jump" aria-pressed="false">One jump</button>
     </div>
   </div>
-  <p class="msg" id="simplify-msg" role="status"></p>
+  <p class="msg" role="status"></p>
 
   <div class="stage">
-    <svg id="simplify-stage" class="stage-svg" role="img" aria-label="A square cut into small pieces on one side, and the same amount made of bigger pieces on the other."></svg>
-    <p class="caption hand" id="simplify-cap" aria-live="polite"></p>
-    <div class="eqline" id="simplify-eq" aria-live="polite"></div>
+    <svg class="stage-svg" role="img" aria-label="A square cut into small pieces on one side, and the same amount made of bigger pieces on the other."></svg>
+    <p class="caption hand" aria-live="polite"></p>
+    <div class="eqline" aria-live="polite"></div>
   </div>
 
   <div class="controls">
-    <button class="btn primary" id="btn-next" type="button">Next step</button>
-    <button class="btn" id="btn-play" type="button">Play it all</button>
-    <button class="btn" id="btn-replay" type="button">Start over</button>
+    <button class="btn primary btn-next" type="button">Next step</button>
+    <button class="btn btn-play" type="button">Play it all</button>
+    <button class="btn btn-replay" type="button">Start over</button>
     <span class="spacer"></span>
-    <p class="hint" id="simplify-where"></p>
+    <p class="hint where"></p>
   </div>
 </section>
 

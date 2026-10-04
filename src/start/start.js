@@ -1,0 +1,1 @@
+/* Start page has no behavior. */

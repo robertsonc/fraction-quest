@@ -59,3 +59,43 @@
 @keyframes snapIn{0%{transform:scale(.72,.55);opacity:0}60%{transform:scale(1.03,1.1);opacity:1}100%{transform:none;opacity:1}}
 @keyframes chunkIn{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){.stage-svg .tile.pop,.stage-svg .chunk,.caption.ink{animation:none}}
+
+/* ---------- add/subtract, multiply, divide ---------- */
+.chip .mk{font-weight:800;margin:0 .1em;color:var(--pen-blue)}
+.chip[aria-pressed="true"] .mk{color:inherit}
+.custom .opword{font-weight:800;font-size:1.2rem;color:var(--ink-2);padding:0 2px}
+.custom select{min-height:40px;padding:4px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-solid);color:var(--ink);font:inherit;font-weight:800;font-size:1.1rem}
+.eqline .op{font-weight:700;color:var(--ink-2);margin:0 .08em}
+.eqline .whole{font-size:1.25em;font-weight:800;line-height:1}
+.eqline .mixed{display:inline-flex;align-items:center;gap:.08em;vertical-align:middle}
+.eqline .mixed .w{font-size:1.5em;line-height:1;font-weight:800}
+.eqline .break{flex-basis:100%;height:0}
+.tool.red{--c:var(--pen-red)}
+.stage-svg .lsign{font:800 54px var(--sans);fill:var(--ink-2);text-anchor:middle}
+.stage-svg .lhand.mid{text-anchor:middle;font-size:19px}
+.stage-svg .cut{stroke:var(--pen-blue);stroke-width:2;stroke-dasharray:4 4;opacity:0;animation:cutIn .5s ease-out .15s forwards}
+.stage-svg .tile.take>rect:first-child{fill-opacity:.55}
+.stage-svg .tile.take>rect:nth-child(2){stroke:var(--pen-red);stroke-width:2;stroke-dasharray:6 4}
+.stage-svg .strip{fill-opacity:0;stroke:var(--slot-line);stroke-width:1.5;stroke-dasharray:5 5}
+.stage-svg .strip.on{fill-opacity:.5;stroke:none;animation:fadeIn .4s ease-out both}
+.stage-svg .band{fill-opacity:0}
+.stage-svg .band.on{fill-opacity:.42;animation:fadeIn .45s ease-out both}
+.stage-svg .chunk.rest{stroke:var(--pen-red);stroke-dasharray:7 5}
+.stage-svg .badge{stroke:#fff;stroke-width:2}
+.stage-svg .badge-n{font:800 13px var(--sans);fill:#fff;pointer-events:none}
+@keyframes cutIn{to{opacity:1}}
+@keyframes fadeIn{from{fill-opacity:0}}
+@media (prefers-reduced-motion: reduce){.stage-svg .cut{animation:none;opacity:1}.stage-svg .strip.on,.stage-svg .band.on{animation:none}}
+
+/* ---------- lesson 2: mixed numbers ---------- */
+.custom .mixedin{display:inline-flex;align-items:center;gap:6px}
+.custom .frac-in{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.custom .frac-in input{width:2.8em;min-height:34px;padding:2px 6px}
+.custom .frac-in i{display:block;width:2.6em;height:2px;background:var(--ink);border-radius:2px}
+.stage-svg .tray.broken{stroke:var(--pen-red);stroke-dasharray:6 4}
+.stage-svg .unit{fill:none;stroke:var(--ink);stroke-width:3}
+.stage-svg .unitline{stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:3 4}
+.tool.sub{margin-left:34px;padding:10px 14px 10px 16px;grid-template-columns:1fr auto}
+.tool.sub h2{font-size:1.02rem}
+.tool.sub p{font-size:.88rem}
+@media (max-width:520px){.tool.sub{margin-left:16px}}

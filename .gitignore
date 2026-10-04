@@ -5,6 +5,7 @@ public/app.css
 public/sw.js
 public/tools/
 public/learn/
+public/start/
 .check.js
 
 # Node / wrangler

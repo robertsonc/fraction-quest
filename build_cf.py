@@ -40,7 +40,18 @@ SECTIONS = [
         "pages": [
             ("index", "Learn", "Short animations that show how fractions work."),
             ("simplify", "Simplifying: bigger pieces", "Watch small pieces join into bigger ones. Same amount, bigger pieces."),
+            ("add-subtract", "Adding and subtracting: same bottoms first", "Cut the pieces until they match, then slide them together or take them away."),
+            ("multiply", "Multiplying: a part of a part", "Shade one way, then the other. The part shaded both ways is the answer."),
+            ("divide", "Dividing: how many fit?", "Count how many of one fraction fit into another, then check with keep, change, flip."),
+            ("add-subtract-mixed", "Adding and subtracting mixed numbers", "Wholes first, then the parts. Fill a bar or break a bar when you need to."),
+            ("multiply-mixed", "Multiplying mixed numbers", "Write each as pieces only, then the rectangle that proves top times top, bottom times bottom."),
+            ("divide-mixed", "Dividing mixed numbers", "Pieces only, then count the groups across the bars."),
         ],
+    },
+    {
+        "dir": "start", "label": "Start here", "print": False,
+        "css": ["site/site.css", "start/start.css"], "js": "start/start.js",
+        "pages": [("index", "Start here", "Two doors: learn and explore, or put it to work in the quest.")],
     },
 ]
 
@@ -111,7 +122,7 @@ def page_shell(section: dict, slug: str, title: str, description: str, body: str
   <nav class="bar no-print" aria-label="Site">
     <a class="brand" href="../" aria-label="Back to Fraction Quest"><span>Fraction</span>{VINC}<span>Quest</span></a>
     {crumb}
-    <span class="actions">{print_btn}<a class="btn" href="../">Back to the app</a></span>
+    <span class="actions">{print_btn}<a class="btn" href="../start/">Start here</a><a class="btn" href="../">Back to the app</a></span>
   </nav>
 <main>
 {body}
