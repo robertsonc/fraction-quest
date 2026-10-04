@@ -46,7 +46,7 @@
 
 /* ---------- print: white paper, one sheet per page ---------- */
 @media print{
-  @page{size:letter;margin:.5in}
+  @page{size:letter;margin:.45in .5in}
   :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{
     --field:#fff; --ink:#111; --ink-2:#333; --ink-3:#555; --line:#9AA4BE; --surface-solid:#fff;
     --pen-red:#B3261E; --pen-green:#0F6B40; --pen-blue:#1F49A8; --pen-orange:#A5530A;
@@ -54,21 +54,27 @@
   }
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   html,body{background:#fff}
-  body{min-height:0;font-size:12pt;line-height:1.4}
+  body{min-height:0;font-size:11pt;line-height:1.34}
   body::before,body::after{display:none}
   .no-print{display:none !important}
   .wrap{max-width:none;padding:0}
   .sheet{background:none;border:0;border-radius:0;box-shadow:none;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none}
-  .sheet-head{margin-bottom:12pt}
-  .sheet-head h1{font-size:24pt}
-  .tag{font-size:15pt}
-  .grid{gap:12pt}
+  .sheet-head{margin-bottom:9pt}
+  .sheet-head h1{font-size:22pt}
+  .tag{font-size:14pt}
+  .grid{gap:8pt}
   .card,.callout,.tool{break-inside:avoid;page-break-inside:avoid;box-shadow:none;background:#fff}
-  .card{border:1.2pt solid var(--line);border-top:5pt solid var(--c);border-radius:10pt;padding:10pt 13pt 12pt}
+  .card{border:1.2pt solid var(--line);border-top:5pt solid var(--c);border-radius:10pt;padding:7pt 11pt 8pt}
+  .card p{margin:.22em 0}
+  .steps{gap:3pt}
+  .label{margin-top:6pt}
   .card h2{font-size:13pt}
-  .callout{border-radius:10pt;padding:7pt 12pt 9pt}
-  .eq{font-size:17pt}
-  .hand{font-size:14pt}
+  .callout{border-radius:10pt;padding:5pt 12pt 6pt}
+  .callout h2{font-size:11.5pt;margin-bottom:2pt}
+  .callout .rules{display:flex;flex-wrap:wrap;justify-content:center;gap:2pt 16pt}
+  .callout .rules span b{min-width:0}
+  .eq{font-size:14.5pt}
+  .hand{font-size:12.5pt}
   a{color:inherit;text-decoration:none}
   .print-foot{display:block;margin-top:12pt;text-align:center;color:var(--ink-3);font-size:8.5pt}
 }
