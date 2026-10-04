@@ -1,0 +1,241 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".16"/>
+    </linearGradient>
+    <pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="3.5" height="9" fill="#D23B3B" fill-opacity=".45"/>
+    </pattern>
+  </defs>
+</svg>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<div class="wrap">
+  <header class="top">
+    <h1 class="title" aria-label="Fraction Quest">
+      <span>Fraction</span>
+      <span class="vinc" aria-hidden="true"><i style="--c:#E5483B"></i><i style="--c:#F38B2A"></i><i style="--c:#F2C12E"></i><i style="--c:#3FAE68"></i><i style="--c:#20A4B5"></i><i style="--c:#3B7EE0"></i><i style="--c:#8E5AD5"></i></span>
+      <span>Quest</span>
+    </h1>
+
+    <figure class="hero">
+      <svg id="hero-svg" class="tray-svg" role="img" aria-label="Nine twelfth pieces snapping into three fourth pieces. Same amount, bigger pieces."></svg>
+      <figcaption>
+        <span class="hero-eq" id="hero-eq"></span>
+        <span class="tagline">Same amount. Bigger pieces.</span>
+        <button id="hero-replay" class="icon-btn" type="button" aria-label="Replay the snap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+        </button>
+      </figcaption>
+    </figure>
+
+    <div class="tools">
+      <span class="stars" id="stars" title="Stars earned">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>
+        <b id="starCount">0</b><span class="sr"> stars</span>
+      </span>
+      <button id="soundBtn" class="icon-btn" type="button" aria-pressed="true" aria-label="Sound on">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16.5 8.5a5 5 0 0 1 0 7"/><path class="wave" d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      </button>
+      <button id="ruleBtn" class="pill" type="button" aria-expanded="false" aria-controls="rulebook">Rules</button>
+    </div>
+  </header>
+
+  <nav id="path" class="path" aria-label="Lessons"></nav>
+
+  <main>
+    <!-- 1 -->
+    <section id="st-pieces" class="station" aria-labelledby="h-pieces" hidden>
+      <div class="st-head">
+        <h2 id="h-pieces">Bigger pieces</h2>
+        <p class="goal">Simplifying never changes how much you have. It trades lots of small pieces for fewer big ones. Find a chunk size that fits, predict the new fraction, then snap.</p>
+      </div>
+      <div class="row"><span class="row-label">Pick a fraction</span><div class="chips" id="s1-presets"></div><div data-custom="s1"></div></div>
+      <div class="split">
+        <div class="vis stage">
+          <div class="eq" id="s1-eq" aria-live="polite"></div>
+          <svg id="s1-svg" class="tray-svg" role="img" aria-label="Fraction tiles"></svg>
+        </div>
+        <div class="work"><p class="note" id="s1-note" aria-live="polite"></p><div id="s1-work"></div></div>
+      </div>
+      <p class="meter-line" id="m-pieces"></p>
+    </section>
+
+    <!-- 2 -->
+    <section id="st-rule" class="station" aria-labelledby="h-rule" hidden>
+      <div class="st-head">
+        <h2 id="h-rule">The golden rule</h2>
+        <p class="goal">Whatever you divide the top by, divide the bottom by the same number. Try the right way and the common mistakes. Work out each answer and predict what happens before you see it.</p>
+      </div>
+      <div class="row"><span class="row-label">Pick a fraction</span><div class="chips" id="s2-presets"></div></div>
+      <div class="split">
+        <div class="vis stage">
+          <div class="eq" id="s2-eq" aria-live="polite"></div>
+          <div id="s2-linewrap" hidden><svg id="s2-line" class="tray-svg" role="img" aria-label="Number line comparing the two amounts"></svg></div>
+          <div class="why" id="s2-why"></div>
+        </div>
+        <div class="work">
+          <div class="row"><span class="row-label">Try this</span><div class="chips" id="s2-scen"></div></div>
+          <p class="note" id="s2-note" aria-live="polite"></p>
+          <div id="s2-work"></div>
+        </div>
+      </div>
+      <p class="meter-line" id="m-rule"></p>
+    </section>
+
+    <!-- 3 -->
+    <section id="st-rainbow" class="station" aria-labelledby="h-rainbow" hidden>
+      <div class="st-head">
+        <h2 id="h-rainbow">Factor rainbows</h2>
+        <p class="goal">A factor divides into a number with nothing left over. Build each rainbow yourself: test 2, 3, 4 and up, and find each one's partner. When the numbers meet in the middle, you've found them all.</p>
+      </div>
+      <div class="row"><span class="row-label">Pick a fraction</span><div class="chips" id="s3-presets"></div><div data-custom="s3"></div></div>
+      <div class="split">
+        <div class="vis stage">
+          <div class="rb"><p class="rb-label" id="s3-lt"></p><svg id="s3-top" class="tray-svg" role="img" aria-label="Factor rainbow for the top number"></svg><p class="rb-pairs" id="s3-pt"></p></div>
+          <div class="rb"><p class="rb-label" id="s3-lb"></p><svg id="s3-bot" class="tray-svg" role="img" aria-label="Factor rainbow for the bottom number"></svg><p class="rb-pairs" id="s3-pb"></p></div>
+          <div class="eq" id="s3-eq" aria-live="polite"></div>
+        </div>
+        <div class="work"><p class="note" id="s3-note" aria-live="polite"></p><div id="s3-work"></div></div>
+      </div>
+      <p class="meter-line" id="m-rainbow"></p>
+    </section>
+
+    <!-- 4 -->
+    <section id="st-primes" class="station" aria-labelledby="h-primes" hidden>
+      <div class="st-head">
+        <h2 id="h-primes">Prime trees</h2>
+        <p class="goal">Grow a factor tree for each number. Split a number into two numbers that multiply to it, and keep going until every branch ends in a prime. Then cancel the primes that match.</p>
+      </div>
+      <div class="row"><span class="row-label">Pick a fraction</span><div class="chips" id="s4-presets"></div><div data-custom="s4"></div></div>
+      <div class="split">
+        <div class="vis stage">
+          <div class="trees">
+            <figure><figcaption id="s4-cap-top"></figcaption><svg id="s4-tree-top" class="tree-svg" role="group" aria-label="Factor tree for the top number"></svg></figure>
+            <figure><figcaption id="s4-cap-bot"></figcaption><svg id="s4-tree-bot" class="tree-svg" role="group" aria-label="Factor tree for the bottom number"></svg></figure>
+          </div>
+          <div id="s4-boardwrap" hidden>
+            <div class="pboard" id="s4-board"></div>
+            <p class="cancelled" id="s4-cancelled"></p>
+          </div>
+          <div class="eq" id="s4-eq" aria-live="polite"></div>
+        </div>
+        <div class="work"><p class="note" id="s4-note" aria-live="polite"></p><div id="s4-work"></div></div>
+      </div>
+      <p class="meter-line" id="m-primes"></p>
+    </section>
+
+    <!-- 5 -->
+    <section id="st-wholes" class="station" aria-labelledby="h-wholes" hidden>
+      <div class="st-head">
+        <h2 id="h-wholes">Wholes and leftovers</h2>
+        <p class="goal">When the top is bigger than the bottom, you have more than one whole. Simplify, figure out how many whole bars fill up, then write the leftover as a fraction.</p>
+      </div>
+      <div class="row"><span class="row-label">Pick a fraction</span><div class="chips" id="s5-presets"></div><div data-custom="s5"></div></div>
+      <div class="stage"><div class="wsteps" id="s5-steps" aria-live="polite"></div></div>
+      <p class="meter-line" id="m-wholes"></p>
+    </section>
+
+    <!-- 6 -->
+    <section id="st-detective" class="station" aria-labelledby="h-detective" hidden>
+      <div class="st-head">
+        <h2 id="h-detective">Mistake detective</h2>
+        <p class="goal">Each case shows a student's answer. Solve it yourself first, then name what the student did. You only get one pick, and cases you miss come back later.</p>
+      </div>
+      <div class="split">
+        <div class="vis stage">
+          <div id="s6-case"></div>
+          <div id="s6-linewrap" hidden><svg id="s6-line" class="tray-svg" role="img" aria-label="Number line comparing the problem, the student's answer and the correct answer"></svg></div>
+        </div>
+        <div class="work"><p class="note" id="s6-note" aria-live="polite"></p><div id="s6-work"></div></div>
+      </div>
+      <p class="meter-line" id="m-detective"></p>
+    </section>
+
+    <!-- 7 -->
+    <section id="st-story" class="station" aria-labelledby="h-story" hidden>
+      <div class="st-head">
+        <h2 id="h-story">Story problems</h2>
+        <p class="goal">Read carefully: some questions ask about the part that's left, or give you two groups that you have to add up for the whole.</p>
+      </div>
+      <div class="row"><span class="row-label">Show</span><div class="chips" id="s8-shows"></div></div>
+      <div class="split">
+        <div class="vis stage">
+          <div class="storycard" id="s8-card"></div>
+          <div id="s8-viswrap" hidden>
+            <div class="eq" id="s8-eq" aria-live="polite"></div>
+            <svg id="s8-svg" class="tray-svg" role="img" aria-label="Fraction tiles for the story"></svg>
+          </div>
+        </div>
+        <div class="work"><p class="note" id="s8-note" aria-live="polite"></p><div id="s8-work"></div></div>
+      </div>
+      <p class="meter-line" id="m-story"></p>
+    </section>
+
+    <!-- 8 -->
+    <section id="st-challenge" class="station" aria-labelledby="h-challenge" hidden>
+      <div class="st-head">
+        <h2 id="h-challenge">Challenge</h2>
+        <p class="goal">Simplify all the way, with a mixed number when the top is bigger. Hints never give away your answer. Rushed or repeated misses switch to show-your-work steps.</p>
+      </div>
+      <div class="row levels"><span class="row-label">Level</span><div class="chips" id="s7-levels"></div></div>
+      <div class="split">
+        <div class="vis stage">
+          <div class="qa"><span class="row-label">Simplify</span><span class="eq" id="s7-q"></span></div>
+          <p class="tagline-sm" id="s7-tag"></p>
+          <div class="solution" id="s7-sol" hidden></div>
+          <div class="stats" id="s7-stats"></div>
+        </div>
+        <div class="work"><p class="note" id="s7-note" aria-live="polite"></p><div id="s7-work"></div></div>
+      </div>
+      <p class="meter-line" id="m-challenge"></p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Progress and stars save on this device.</span>
+    <span class="foot-btns"><button class="linkish" id="coachBtn" type="button">Coach report</button><button class="linkish" id="resetBtn" type="button">Reset progress</button></span>
+  </footer>
+</div>
+
+<aside id="rulebook" class="rulebook" aria-labelledby="rb-title" hidden>
+  <button class="rb-close" id="rbClose" type="button" aria-label="Close rule book">×</button>
+  <h2 id="rb-title">Simplifying rules</h2>
+  <ol>
+    <li>Divide the top and the bottom by the <u>same</u> number.</li>
+    <li>Use a number that goes into <u>both</u> evenly. That's a common factor.</li>
+    <li>Keep going until only 1 goes into both. Shortcut: divide once by the greatest common factor.</li>
+    <li>Top bigger than the bottom? Make a mixed number. Wholes = top ÷ bottom. The remainder goes over the same bottom.</li>
+    <li>Simplify the leftover fraction too.</li>
+  </ol>
+  <p class="never">Never subtract from both, divide only one part, or drop the top.</p>
+  <h2>Factor tricks</h2>
+  <ul>
+    <li>2 goes in if the number is even.</li>
+    <li>3 goes in if the digits add up to a multiple of 3.</li>
+    <li>5 goes in if it ends in 0 or 5.</li>
+    <li>Primes under 30: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29.</li>
+  </ul>
+</aside>
+
+<div id="scrim" class="scrim" hidden></div>
+<aside id="coach" class="coach" role="dialog" aria-modal="true" aria-labelledby="coach-title" hidden>
+  <div class="coach-head"><h2 id="coach-title">Coach report</h2><button class="icon-btn" id="coachClose" type="button" aria-label="Close coach report">×</button></div>
+  <div id="coach-body"></div>
+  <button class="linkish" id="coachReset" type="button">Clear these stats</button>
+</aside>
+
+<div id="keypad" class="keypad" aria-hidden="true">
+  <div class="keys">
+    <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+    <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+    <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+    <button type="button" data-k="0">0</button>
+    <button type="button" data-k="del" class="k-del" aria-label="Delete">⌫</button>
+    <button type="button" data-k="next" class="k-next">Next box</button>
+    <button type="button" data-k="enter" class="k-enter">Check</button>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>

@@ -1,0 +1,6 @@
+# Cloudflare Pages project (static assets only, no Functions).
+# The project was created with `wrangler pages project create` (direct upload), so deployments come from
+# GitHub Actions (.github/workflows/deploy.yml) or ./deploy.sh, not from the Pages Git integration.
+name = "fraction-quest-606"
+pages_build_output_dir = "./public"
+compatibility_date = "2026-10-01"
