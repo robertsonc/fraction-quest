@@ -27,15 +27,15 @@ jobs:
       pull-requests: write # preview-URL comment on pull requests
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -99,7 +99,7 @@ jobs:
 
       - name: Comment preview URL on the pull request
         if: github.event_name == 'pull_request' && steps.plan.outputs.deploy == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
           ALIAS_URL: ${{ steps.deploy.outputs.alias }}
