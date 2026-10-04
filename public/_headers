@@ -50,6 +50,15 @@
 /learn/simplify
   Cache-Control: no-cache
 
+/learn/add-subtract
+  Cache-Control: no-cache
+
+/learn/multiply
+  Cache-Control: no-cache
+
+/learn/divide
+  Cache-Control: no-cache
+
 /learn/learn.css
   Cache-Control: public, max-age=31536000, immutable
 

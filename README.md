@@ -68,14 +68,22 @@ preview, or Playwright `page.pdf`) before merging.
 ## Learn pages (concept animations)
 
 `/learn/` holds short animations that teach one idea each, separate from the quest's eight stations. They show;
-nothing is scored. `/learn/simplify` is the first: a square cut into small pieces on one side, and the same amount
-made of bigger pieces on the other. The shaded columns fly across and grow. "Small steps" divides by the smallest
-number that works each round (2, then 3, …) and checks again; "One jump" divides once by the biggest number that
-goes into both. Any fraction smaller than one whole with a bottom up to 48 can be typed in.
+nothing is scored. Every page has presets, a form for your own numbers, Start / Next step / Play it all / Start
+over, a plain-language caption per step, and the equation building underneath. Two squares sit side by side on
+wide screens and stack on phones. Reduced-motion users get the end states without the flight.
 
-To add a concept page: write a fragment in `src/learn/<slug>.html`, add an `init<Name>()` in `learn.js` that
-returns early when its root element is missing, add a row to the learn section in `build_cf.py`, add the slug to
-`_headers` as `no-cache`, and link it from `src/learn/index.html`.
+| Page | What it shows |
+| --- | --- |
+| `/learn/simplify` | A square cut into small pieces on one side, the same amount in bigger pieces on the other. Shaded columns fly across and grow. "Small steps" divides by the smallest number that works each round and checks again; "One jump" divides once by the biggest number that goes into both. |
+| `/learn/add-subtract` | Two squares. Pieces are cut smaller until both bottoms match (the first number both count to), then the right square's pieces slide into the left (add) or the left's pieces are taken away (subtract). Ends with the simplify check. |
+| `/learn/multiply` | One square. The second fraction is shaded in strips, the first in rows across them; the overlap is the answer, which is why the rule is top × top, bottom × bottom. |
+| `/learn/divide` | Two squares with matching pieces. Groups the size of the second fraction are counted inside the first, leftovers shown as a fraction of a group. Then keep – change – flip is shown landing on the same answer. |
+
+`learn.js` has one `Scene` (layout, squares, grids, the fraction label, a reshaping tile flight) and one
+`controller` (steps, buttons, resize) shared by all pages, plus one `init<Name>()` per page that returns early
+when its root element is missing. To add a concept page: write a fragment in `src/learn/<slug>.html` (copy one;
+keep the `.presets`, `.custom`, `.stage`, `.controls` hooks), add its `init`, add a row to the learn section in
+`build_cf.py`, add the slug to `_headers` as `no-cache`, and link it from `src/learn/index.html`.
 
 ## Writing style
 

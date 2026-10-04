@@ -40,6 +40,9 @@ SECTIONS = [
         "pages": [
             ("index", "Learn", "Short animations that show how fractions work."),
             ("simplify", "Simplifying: bigger pieces", "Watch small pieces join into bigger ones. Same amount, bigger pieces."),
+            ("add-subtract", "Adding and subtracting: same bottoms first", "Cut the pieces until they match, then slide them together or take them away."),
+            ("multiply", "Multiplying: a part of a part", "Shade one way, then the other. The part shaded both ways is the answer."),
+            ("divide", "Dividing: how many fit?", "Count how many of one fraction fit into another, then check with keep, change, flip."),
         ],
     },
 ]

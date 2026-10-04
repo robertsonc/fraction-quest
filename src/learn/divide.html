@@ -1,0 +1,54 @@
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".16"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="intro">
+  <h1>Dividing: how many fit?</h1>
+  <p class="tag">÷ asks how many of one thing fit into another.</p>
+</header>
+
+<section class="lesson" id="divide" aria-label="Dividing animation">
+  <div class="row">
+    <span class="row-label">Pick a problem</span>
+    <div class="chips presets"></div>
+  </div>
+  <div class="row">
+    <span class="row-label">Or your own</span>
+    <form class="custom" autocomplete="off">
+      <label>Top <input class="in-a" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="First top number"></label>
+      <label>Bottom <input class="in-b" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="First bottom number"></label>
+      <span class="opword">÷</span>
+      <label>Top <input class="in-c" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Second top number"></label>
+      <label>Bottom <input class="in-d" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="Second bottom number"></label>
+      <button class="btn" type="submit">Show it</button>
+    </form>
+  </div>
+  <p class="msg" role="status"></p>
+
+  <div class="stage">
+    <svg class="stage-svg" role="img" aria-label="Two squares cut into matching pieces. Groups the size of the second fraction are counted inside the first."></svg>
+    <p class="caption hand" aria-live="polite"></p>
+    <div class="eqline" aria-live="polite"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary btn-next" type="button">Next step</button>
+    <button class="btn btn-play" type="button">Play it all</button>
+    <button class="btn btn-replay" type="button">Start over</button>
+    <span class="spacer"></span>
+    <p class="hint where"></p>
+  </div>
+</section>
+
+<aside class="words" aria-labelledby="h-words">
+  <h2 id="h-words">In words</h2>
+  <p>Make the bottoms the same so the pieces match. Then count how many groups the size of the second fraction fit into the first. Pieces left over are a fraction of a group.</p>
+  <p>The shortcut, keep – change – flip, gives the same answer every time.</p>
+  <p>Paper version: <a href="../tools/what-do-i-do">Fractions: What Do I Do?</a></p>
+</aside>
