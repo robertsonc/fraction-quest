@@ -115,7 +115,8 @@ jobs:
               marker,
               '### Cloudflare Pages preview',
               '',
-              `Branch \`${BRANCH}\` at commit ${context.sha.slice(0, 7)}.`,
+              // On pull_request events context.sha is the synthetic merge commit; report the branch head instead.
+              `Branch \`${BRANCH}\` at commit ${(context.payload.pull_request?.head?.sha ?? context.sha).slice(0, 7)}.`,
               '',
               `- Preview: ${DEPLOY_URL || '(URL not found in wrangler output; see the job summary)'}`,
               ALIAS_URL ? `- Branch alias: ${ALIAS_URL}` : null,
