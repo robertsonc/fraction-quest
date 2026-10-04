@@ -11,7 +11,7 @@ iPad like an app and works offline. Live at <https://fraction-quest-606.pages.de
 | `fonts.css`, `sw.template.js` | Font-face declarations and the service-worker template that the build stamps with a version |
 | `build_cf.py` | Turns `src/` into `public/` (`index.html`, `app.js`, `app.css`, `sw.js`). Runs `node --check` on the bundle and refuses inline event handlers that the CSP would block |
 | `public/` | Exactly what gets deployed. Icons, fonts, `_headers`, and `manifest.webmanifest` are committed; the four generated files are not (see `.gitignore`) and are rebuilt on every deploy |
-| `wrangler.toml` | Pages project name and output directory. Single source of truth for the project name |
+| `wrangler.toml` | Pages project name (`fraction-quest`) and output directory. Single source of truth for the project name. The hostname is `fraction-quest-606.pages.dev` because Cloudflare adds a suffix when `<name>.pages.dev` is already taken |
 | `package.json` | Pins the wrangler version used by CI and `deploy.sh` |
 | `.github/workflows/deploy.yml` | Build and deploy automation |
 

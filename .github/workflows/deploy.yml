@@ -79,6 +79,9 @@ jobs:
             echo "::error::CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID must be set as repository secrets." >&2
             exit 1
           fi
+          # Read-only: shows the Pages projects (name and *.pages.dev hostname) this token can see, so a
+          # "project does not exist" failure below is diagnosable from the log without dashboard access.
+          npx wrangler pages project list
           # Project name and output directory come from wrangler.toml. The build output is not committed,
           # so the tree is always dirty from git's point of view; --commit-dirty silences that warning.
           npx wrangler pages deploy \
