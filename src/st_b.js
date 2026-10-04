@@ -8,7 +8,7 @@
     if (p === 3 && v >= 10) {
       const digits = String(v).split('').map(Number);
       const s = digits.reduce((a, b) => a + b, 0);
-      return `Add the digits of ${v}: ${digits.join(' + ')} = ${s}. That's a multiple of 3, so 3 goes into ${v}. Split it!`;
+      return `Add the digits of ${v}: ${digits.join(' + ')} = ${s}. 3 goes into ${s}, so 3 goes into ${v}. Split it!`;
     }
     return `${v} isn't prime. Try dividing it by ${p}.`;
   }
@@ -224,7 +224,7 @@
       const G = gcd(n, d);
       const clean = this.miss === 0 && this.asks.every((a) => a.tries === 0);
       let msg = `${frac(n, d)} = ${res}.`;
-      if (this.pairs.length) msg += ` The primes you cancelled multiply to ${this.pairs.join(' × ')} = ${G}, the greatest common factor of ${n} and ${d}.`;
+      if (this.pairs.length) msg += ` The primes you cancelled multiply to ${this.pairs.join(' × ')} = ${G}, the biggest number that goes into both ${n} and ${d}.`;
       if (!this.top.some((x) => !x.gone) && this.pairs.length) msg += ' Everything on top cancelled, so 1 was left on top, not 0.';
       if (B === 1) msg += ` The bottom is 1, so it's the whole number ${A}.`;
       else if (A > B) msg += ` As a mixed number that's ${showVal(simplest(A, B))}.`;
@@ -268,7 +268,7 @@
     },
     step2() {
       const { n, d, tok } = this, { G } = this.v;
-      const el = this.block('2. Simplify first', '<p>Divide the top and the bottom by their greatest common factor. If nothing bigger than 1 goes into both, write it the same.</p>');
+      const el = this.block('2. Simplify first', '<p>Divide the top and the bottom by the biggest number that goes into both. If nothing bigger than 1 goes into both, write it the same.</p>');
       this.asks.push(ask(el, {
         st: 'wholes',
         tpl: `${frac(n, d)} = [[frac:a,b]]`,
@@ -297,7 +297,7 @@
     step4() {
       const { tok } = this, { A, B, Q, R } = this.v;
       const rest = R ? ` and ${R} ${pieceName(B, R)} left over` : ', with nothing left over';
-      this.block('4. Fill the bars', `<svg class="tray-svg" id="s5-bars" role="img" aria-label="${A} pieces filling ${Q} whole bars"></svg><p>${A} ÷ ${B} = ${Q} remainder ${R}. That's ${Q} full bar${Q === 1 ? '' : 's'}${rest}.</p>`);
+      this.block('4. Fill the bars', `<svg class="tray-svg" id="s5-bars" role="img" aria-label="${A} pieces filling ${Q} whole bars"></svg><p>${A} ÷ ${B} = ${Q} with ${R} left over. That's ${Q} full bar${Q === 1 ? '' : 's'}${rest}.</p>`);
       this.barsOn = true;
       this.drawBars(true);
       window.setTimeout(() => { if (tok === this.tok) this.step5(); }, reduced ? 0 : Math.min(2400, A * 110 + 500));
@@ -315,7 +315,7 @@
           let other = '';
           if (G > 1) {
             const q0 = Math.floor(n / d), r0 = n % d;
-            if (r0) { const g2 = gcd(r0, d); other = ` Another way: change it first, then simplify the leftover. ${n} ÷ ${d} = ${q0} remainder ${r0}, so ${showVal({ w: q0, n: r0, d })}, and ${frac(r0, d)} simplifies to ${frac(r0 / g2, d / g2)}. Same answer!`; }
+            if (r0) { const g2 = gcd(r0, d); other = ` Another way: change it first, then simplify the leftover. ${n} ÷ ${d} = ${q0} with ${r0} left over, so ${showVal({ w: q0, n: r0, d })}, and ${frac(r0, d)} simplifies to ${frac(r0 / g2, d / g2)}. Same answer!`; }
           }
           const p = document.createElement('p');
           p.className = 'note good';

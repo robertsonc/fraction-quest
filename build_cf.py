@@ -2,7 +2,7 @@
 """Builds the Cloudflare Pages package in public/ from the app sources in src/.
 
 Output: index.html + app.css + app.js (split out of the single-file build so the page can run under a strict
-Content-Security-Policy with no inline script), the printable tool pages under tools/, self-hosted fonts, web app
+Content-Security-Policy with no inline script), the side sections (tools/, learn/), self-hosted fonts, web app
 manifest, icons, and an offline service worker whose cache name is tied to the build hash so every deploy
 replaces the old cache.
 """
@@ -21,13 +21,27 @@ SRC = ROOT / "src"
 OUT = ROOT / "public"
 APP_PARTS = ["core.js", "st_a.js", "st_b.js", "st_c.js", "st_d.js"]
 
-# Printable tools: (slug, page title, one-line description). Each slug has a body fragment in src/tools/<slug>.html.
-# Add a new sheet by dropping in a fragment and adding a row here; index.html is the list page.
-TOOLS = [
-    ("index", "Tools", "Printable one-page guides from Fraction Quest."),
-    ("what-do-i-do", "Fractions: What Do I Do?", "Look at the sign, then add, subtract, multiply, or divide fractions."),
-    ("factors-gcf-lcm", "How to Find Factors, GCF, and LCM", "Find factors, the greatest common factor, and the least common multiple."),
-    ("simplified", "Is It Simplified All the Way?", "The check loop for simplifying a fraction completely."),
+# Side sections. Each page is a body fragment in src/<dir>/<slug>.html wrapped in the shared shell; index.html is
+# the section's list page. Add a page by dropping in a fragment and adding a row to the section's "pages".
+SECTIONS = [
+    {
+        "dir": "tools", "label": "Tools", "print": True,
+        "css": ["site/site.css", "tools/tools.css"], "js": "tools/tools.js",
+        "pages": [
+            ("index", "Tools", "Printable one-page guides from Fraction Quest."),
+            ("what-do-i-do", "Fractions: What Do I Do?", "Look at the sign, then add, subtract, multiply, or divide fractions."),
+            ("factors-gcf-lcm", "How to Find Factors, GCF, and LCM", "Find factors, the greatest common factor, and the least common multiple."),
+            ("simplified", "Is It Simplified All the Way?", "The check loop for simplifying a fraction completely."),
+        ],
+    },
+    {
+        "dir": "learn", "label": "Learn", "print": False,
+        "css": ["site/site.css", "learn/learn.css"], "js": "learn/learn.js",
+        "pages": [
+            ("index", "Learn", "Short animations that show how fractions work."),
+            ("simplify", "Simplifying: bigger pieces", "Watch small pieces join into bigger ones. Same amount, bigger pieces."),
+        ],
+    },
 ]
 
 SHEEN = ('<linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">'
@@ -70,14 +84,14 @@ def check_no_inline_handlers(html: str, label: str) -> None:
         raise RuntimeError(f"inline event handler in {label} would be blocked by the CSP")
 
 
-def tool_page(slug: str, title: str, description: str, body: str, version: str) -> str:
-    """Wraps a tool fragment in the shared shell: head, top bar (screen only), the sheet, print-only footer."""
+def page_shell(section: dict, slug: str, title: str, description: str, body: str, version: str) -> str:
+    """Wraps a fragment in the shared shell: head, top bar (screen only), the body, print-only footer."""
     is_index = slug == "index"
-    crumb = "" if is_index else '<span class="crumb"><a href="./">Tools</a><span aria-hidden="true">/</span><span>Sheet</span></span>'
-    print_btn = "" if is_index else f'<button class="btn primary" type="button" data-print>{PRINT_ICON}Print</button>'
-    sheet_open = '<main class="sheet-wrap">' if is_index else '<main><article class="sheet">'
-    sheet_close = "</main>" if is_index else "</article></main>"
-    page_title = "Fraction Quest Tools" if is_index else f"{title} | Fraction Quest Tools"
+    label = section["label"]
+    crumb = "" if is_index else f'<span class="crumb"><a href="./">{label}</a><span aria-hidden="true">/</span><span>{title}</span></span>'
+    print_btn = f'<button class="btn primary" type="button" data-print>{PRINT_ICON}Print</button>' if section["print"] and not is_index else ""
+    page_title = f"Fraction Quest {label}" if is_index else f"{title} | Fraction Quest {label}"
+    section_dir = section["dir"]
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -90,7 +104,7 @@ def tool_page(slug: str, title: str, description: str, body: str, version: str) 
 <link rel="icon" type="image/png" href="../icons/favicon-64.png">
 <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="preload" href="../fonts/lexend-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="./tools.css?v={version}">
+<link rel="stylesheet" href="./{section_dir}.css?v={version}">
 </head>
 <body>
 <div class="wrap">
@@ -99,12 +113,12 @@ def tool_page(slug: str, title: str, description: str, body: str, version: str) 
     {crumb}
     <span class="actions">{print_btn}<a class="btn" href="../">Back to the app</a></span>
   </nav>
-{sheet_open}
+<main>
 {body}
-{sheet_close}
-  <p class="print-foot">Fraction Quest &middot; fraction-quest-606.pages.dev/tools</p>
+</main>
+  <p class="print-foot">Fraction Quest &middot; fraction-quest-606.pages.dev/{section_dir}</p>
 </div>
-<script src="./tools.js?v={version}" defer></script>
+<script src="./{section_dir}.js?v={version}" defer></script>
 </body>
 </html>
 """
@@ -113,13 +127,19 @@ def tool_page(slug: str, title: str, description: str, body: str, version: str) 
 def build() -> str:
     app_js = "".join(read(p) for p in APP_PARTS) + SW_REGISTER
     check_js(app_js, "app.js")
-    tools_js = read("tools/tools.js")
-    check_js(tools_js, "tools.js")
-
     fonts = (ROOT / "fonts.css").read_text(encoding="utf-8")
     css = fonts + read("style.css") + read("glass.css")
-    # tools.css lives one directory down, so the font URLs point back up to /fonts/.
-    tools_css = fonts.replace("url('fonts/", "url('../fonts/") + read("tools/tools.css")
+    # Section stylesheets live one directory down, so the font URLs point back up to /fonts/.
+    fonts_down = fonts.replace("url('fonts/", "url('../fonts/")
+    sections = []
+    for sec in SECTIONS:
+        sec_js = read(sec["js"])
+        check_js(sec_js, sec["js"])
+        sec_css = fonts_down + "".join(read(c) for c in sec["css"])
+        bodies = {slug: read(f"{sec['dir']}/{slug}.html") for slug, _, _ in sec["pages"]}
+        for slug, frag in bodies.items():
+            check_no_inline_handlers(frag, f"{sec['dir']}/{slug}.html")
+        sections.append((sec, sec_js, sec_css, bodies))
 
     body = read("body.html")
     body, n = re.subn(r'<linearGradient id="sheen".*?</linearGradient>', SHEEN, body, flags=re.S)
@@ -127,13 +147,8 @@ def build() -> str:
         raise RuntimeError(f"expected one tile sheen gradient in body.html, found {n}")
     check_no_inline_handlers(body, "body.html")
 
-    tool_bodies = {slug: read(f"tools/{slug}.html") for slug, _, _ in TOOLS}
-    for slug, frag in tool_bodies.items():
-        check_no_inline_handlers(frag, f"tools/{slug}.html")
-
-    version = hashlib.sha256(
-        (app_js + css + body + tools_js + tools_css + "".join(tool_bodies.values())).encode()
-    ).hexdigest()[:10]
+    section_blob = "".join(sec_js + sec_css + "".join(bodies.values()) for _, sec_js, sec_css, bodies in sections)
+    version = hashlib.sha256((app_js + css + body + section_blob).encode()).hexdigest()[:10]
 
     (OUT / "app.js").write_text(app_js, encoding="utf-8")
     (OUT / "app.css").write_text(css, encoding="utf-8")
@@ -160,17 +175,20 @@ def build() -> str:
 """
     (OUT / "index.html").write_text(head + body + f'<script src="./app.js?v={version}" defer></script>\n</body>\n</html>\n', encoding="utf-8")
 
-    tools_out = OUT / "tools"
-    tools_out.mkdir(exist_ok=True)
-    (tools_out / "tools.css").write_text(tools_css, encoding="utf-8")
-    (tools_out / "tools.js").write_text(tools_js, encoding="utf-8")
-    for slug, title, description in TOOLS:
-        (tools_out / f"{slug}.html").write_text(tool_page(slug, title, description, tool_bodies[slug], version), encoding="utf-8")
+    section_urls, section_assets = [], []
+    for sec, sec_js, sec_css, bodies in sections:
+        out_dir = OUT / sec["dir"]
+        out_dir.mkdir(exist_ok=True)
+        (out_dir / f"{sec['dir']}.css").write_text(sec_css, encoding="utf-8")
+        (out_dir / f"{sec['dir']}.js").write_text(sec_js, encoding="utf-8")
+        for slug, title, description in sec["pages"]:
+            (out_dir / f"{slug}.html").write_text(page_shell(sec, slug, title, description, bodies[slug], version), encoding="utf-8")
+        # Pages serves <dir>/<slug>.html at the clean URL /<dir>/<slug> (and redirects the .html form to it).
+        section_urls += [f"./{sec['dir']}/"] + [f"./{sec['dir']}/{slug}" for slug, _, _ in sec["pages"] if slug != "index"]
+        section_assets += [f"./{sec['dir']}/{sec['dir']}.css?v={version}", f"./{sec['dir']}/{sec['dir']}.js?v={version}"]
 
-    # Pages serves tools/<slug>.html at the clean URL /tools/<slug> (and redirects the .html form to it).
-    tool_urls = ["./tools/"] + [f"./tools/{slug}" for slug, _, _ in TOOLS if slug != "index"]
     assets = ["./", f"./app.css?v={version}", f"./app.js?v={version}", "./manifest.webmanifest",
-              *tool_urls, f"./tools/tools.css?v={version}", f"./tools/tools.js?v={version}",
+              *section_urls, *section_assets,
               "./fonts/lexend-latin.woff2", "./fonts/patrick-hand-latin.woff2",
               "./icons/apple-touch-icon.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/favicon-64.png"]
     sw = (ROOT / "sw.template.js").read_text(encoding="utf-8")
