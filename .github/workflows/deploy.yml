@@ -92,12 +92,13 @@ jobs:
           alias="$(grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' deploy.log | sed -n '2p' || true)"
           echo "url=$url" >> "$GITHUB_OUTPUT"
           echo "alias=$alias" >> "$GITHUB_OUTPUT"
+          # Production deploys print only the deployment URL (no branch alias), so the alias line is optional.
           {
             echo "### Cloudflare Pages deployment"
             echo
             echo "- Branch: \`$BRANCH\`"
             echo "- Deployment: ${url:-unknown}"
-            [[ -n "$alias" ]] && echo "- Alias: $alias"
+            if [[ -n "$alias" ]]; then echo "- Alias: $alias"; fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment preview URL on the pull request
