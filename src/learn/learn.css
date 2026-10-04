@@ -86,3 +86,16 @@
 @keyframes cutIn{to{opacity:1}}
 @keyframes fadeIn{from{fill-opacity:0}}
 @media (prefers-reduced-motion: reduce){.stage-svg .cut{animation:none;opacity:1}.stage-svg .strip.on,.stage-svg .band.on{animation:none}}
+
+/* ---------- lesson 2: mixed numbers ---------- */
+.custom .mixedin{display:inline-flex;align-items:center;gap:6px}
+.custom .frac-in{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.custom .frac-in input{width:2.8em;min-height:34px;padding:2px 6px}
+.custom .frac-in i{display:block;width:2.6em;height:2px;background:var(--ink);border-radius:2px}
+.stage-svg .tray.broken{stroke:var(--pen-red);stroke-dasharray:6 4}
+.stage-svg .unit{fill:none;stroke:var(--ink);stroke-width:3}
+.stage-svg .unitline{stroke:var(--ink-3);stroke-width:1.5;stroke-dasharray:3 4}
+.tool.sub{margin-left:34px;padding:10px 14px 10px 16px;grid-template-columns:1fr auto}
+.tool.sub h2{font-size:1.02rem}
+.tool.sub p{font-size:.88rem}
+@media (max-width:520px){.tool.sub{margin-left:16px}}

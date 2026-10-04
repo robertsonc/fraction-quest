@@ -54,6 +54,12 @@ either rename it back in the Cloudflare dashboard or change the `branches:` filt
 Dependabot opens weekly PRs for the GitHub Actions and for wrangler. wrangler is pinned exactly in
 `package.json`, so each bump is a reviewed PR with a preview deploy rather than an implicit upgrade.
 
+## Start page
+
+`/start/` is the front door for someone new: two cards, "Learn / Explore" (links to every Learn page and the
+tools) and "Put it to work!" (the quest). It is linked first in the app footer and from every side page's top bar.
+The app itself stays at `/` so the installed iPad icon still opens straight into the quest.
+
 ## Printable tools
 
 `/tools/` lists one-page reference sheets, linked from the app footer. On screen they use the app's look; in print
@@ -78,9 +84,12 @@ wide screens and stack on phones. Reduced-motion users get the end states withou
 | `/learn/add-subtract` | Two squares. Pieces are cut smaller until both bottoms match (the first number both count to), then the right square's pieces slide into the left (add) or the left's pieces are taken away (subtract). Ends with the simplify check. |
 | `/learn/multiply` | One square. The second fraction is shaded in strips, the first in rows across them; the overlap is the answer, which is why the rule is top × top, bottom × bottom. |
 | `/learn/divide` | Two squares with matching pieces. Groups the size of the second fraction are counted inside the first, leftovers shown as a fraction of a group. Then keep – change – flip is shown landing on the same answer. |
+| `/learn/add-subtract-mixed` | Lesson 2. Stacks of whole bars. Wholes slide across first, then the part pieces; the parts fill a new bar when they add up to more than one, or a whole bar is broken into pieces when the part to take away is too big. Ends with the simplify check and the pieces-only way as a second line. |
+| `/learn/multiply-mixed` | Lesson 2. Each mixed number is written as pieces only (the whole bars get cut), then a rectangle as wide as the first and as tall as the second, with one whole square outlined, shows the product; groups of a whole turn it back into a mixed number. Also covers whole × fraction (5/8 × 4). |
+| `/learn/divide-mixed` | Lesson 2. Pieces only, matching bottoms, then numbered groups counted across the bars, then keep – change – flip. |
 
-`learn.js` has one `Scene` (layout, squares, grids, the fraction label, a reshaping tile flight) and one
-`controller` (steps, buttons, resize) shared by all pages, plus one `init<Name>()` per page that returns early
+`learn.js` has a `Scene` (one or two squares), a `BarScene` (stacks of whole bars for mixed numbers), shared
+helpers (`flyTiles`, `markGroupCells`), and one `controller` (steps, buttons, resize) shared by all pages, plus one `init<Name>()` per page that returns early
 when its root element is missing. To add a concept page: write a fragment in `src/learn/<slug>.html` (copy one;
 keep the `.presets`, `.custom`, `.stage`, `.controls` hooks), add its `init`, add a row to the learn section in
 `build_cf.py`, add the slug to `_headers` as `no-cache`, and link it from `src/learn/index.html`.

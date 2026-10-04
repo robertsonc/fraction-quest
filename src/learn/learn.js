@@ -44,11 +44,13 @@
   const opHTML = (s) => `<span class="op">${s}</span>`;
   /** n/d as a whole number, a mixed number, or a fraction. */
   function valueHTML(n, d) {
+    const g0 = gcd(n, d) || 1; n /= g0; d /= g0;
     if (d === 1 || n % d === 0) return `<span class="whole">${n / d}</span>`;
     if (n > d) return `<span class="mixed" role="img" aria-label="${Math.floor(n / d)} and ${n % d} over ${d}"><span class="w">${Math.floor(n / d)}</span>${fracHTML(n % d, d)}</span>`;
     return fracHTML(n, d);
   }
   function valueText(n, d) {
+    const g0 = gcd(n, d) || 1; n /= g0; d /= g0;
     if (d === 1 || n % d === 0) return `${n / d}`;
     if (n > d) return `${Math.floor(n / d)} and ${n % d}/${d}`;
     return `${n}/${d}`;
@@ -93,6 +95,43 @@
     };
     return t;
   }
+
+  /** Flies tiles along moves [{from, to, d, label, color?}] inside `layer`, reshaping on the way; resolves when all have landed. */
+  async function flyTiles(layer, moves, opts = {}) {
+    const { dur = 700, stagger = 120, onStart = null } = opts;
+    const flyers = moves.map((m, i) => ({ m, t: tileEl(layer, m.d, m.label, '', m.color || null).set(m.from.x, m.from.y, m.from.w, m.from.h), delay: m.delay != null ? m.delay : i * stagger, started: false }));
+    const total = reduced ? 0 : dur;
+    const last = flyers.length ? Math.max(...flyers.map((f) => f.delay)) + total : 0;
+    const start = performance.now();
+    await tween(last, () => {
+      const now = performance.now() - start;
+      for (const f of flyers) {
+        const p = reduced ? 1 : Math.max(0, Math.min(1, (now - f.delay) / total));
+        if (p > 0 && !f.started) { f.started = true; if (onStart) onStart(f.m); }
+        const e = ease(p), a = f.m.from, b = f.m.to;
+        f.t.set(a.x + (b.x - a.x) * e, a.y + (b.y - a.y) * e, a.w + (b.w - a.w) * e, a.h + (b.h - a.h) * e);
+      }
+    });
+    layer.innerHTML = '';
+  }
+
+  /** Numbered outlines around consecutive groups of `size` cells; cells past q whole groups are the dashed leftover. */
+  function markGroupCells(cells, size, q, parent) {
+    cells.forEach((cell, i) => {
+      const grp = Math.floor(i / size), isRest = grp >= q;
+      const color = isRest ? null : GROUP[grp % GROUP.length];
+      const cr = cell.rect;
+      el('rect', { class: `chunk ${isRest ? 'rest' : ''}`, x: f1(cr.x - 1), y: f1(cr.y - 1), width: f1(cr.w + 2), height: f1(cr.h + 2), rx: 9, style: `animation-delay:${Math.min(i, 40) * 30}ms${color ? `;stroke:${color}` : ''}` }, parent);
+      if (!isRest && i % size === 0) {
+        const bx = cr.x + 4, by = cr.y + 4;
+        el('circle', { class: 'badge', cx: f1(bx + 10), cy: f1(by + 10), r: 11, fill: color }, parent);
+        text(parent, 'badge-n', bx + 10, by + 10, String(grp + 1), { 'text-anchor': 'middle', 'dominant-baseline': 'central' });
+      }
+    });
+  }
+  const timesWord = (q) => (q === 1 ? 'once' : q === 2 ? 'twice' : `${q} times`);
+  const mixedText = (w, n, d) => (n === 0 ? `${w}` : (w ? `${w} ${n}/${d}` : `${n}/${d}`));
+  const mixedHTML = (w, n, d) => (n === 0 ? `<span class="whole">${w}</span>` : (w ? `<span class="mixed" role="img" aria-label="${w} and ${n} over ${d}"><span class="w">${w}</span>${fracHTML(n, d)}</span>` : fracHTML(n, d)));
 
   /* ---------- scene: one or two squares with a label between ---------- */
   class Scene {
@@ -194,24 +233,7 @@
         : `M ${x + 90} ${y - 30} V ${y + 30} M ${x + 78} ${y + 16} L ${x + 90} ${y + 30} L ${x + 102} ${y + 16}`;
       el('path', { class: 'larrow', d }, this.gM);
     }
-    /** Flies tiles along moves [{from, to, d, label, color?}], reshaping on the way; resolves when all have landed. */
-    async flyTiles(moves, opts = {}) {
-      const { dur = 700, stagger = 120, onStart = null } = opts;
-      const flyers = moves.map((m, i) => ({ m, t: tileEl(this.gF, m.d, m.label, '', m.color || null).set(m.from.x, m.from.y, m.from.w, m.from.h), delay: i * stagger, started: false }));
-      const total = reduced ? 0 : dur;
-      const last = flyers.length ? flyers[flyers.length - 1].delay + total : 0;
-      const start = performance.now();
-      await tween(last, () => {
-        const now = performance.now() - start;
-        for (const f of flyers) {
-          const p = reduced ? 1 : Math.max(0, Math.min(1, (now - f.delay) / total));
-          if (p > 0 && !f.started) { f.started = true; if (onStart) onStart(f.m); }
-          const e = ease(p), a = f.m.from, b = f.m.to;
-          f.t.set(a.x + (b.x - a.x) * e, a.y + (b.y - a.y) * e, a.w + (b.w - a.w) * e, a.h + (b.h - a.h) * e);
-        }
-      });
-      this.gF.innerHTML = '';
-    }
+    flyTiles(moves, opts = {}) { return flyTiles(this.gF, moves, opts); }
 
     /* ----- simplify page helpers ----- */
     drawLeft(n, d, k, name) {
@@ -554,20 +576,7 @@
       scene.sign('÷', opts.note || '');
       return { cellsA, cellsB };
     }
-    function markGroups(p, cellsA) {
-      const shaded = cellsA.filter((x) => x.tile);
-      shaded.forEach((cell, i) => {
-        const grp = Math.floor(i / p.C), isRest = grp >= p.q;
-        const color = isRest ? null : GROUP[grp % GROUP.length];
-        const cr = cell.rect;
-        el('rect', { class: `chunk ${isRest ? 'rest' : ''}`, x: f1(cr.x - 1), y: f1(cr.y - 1), width: f1(cr.w + 2), height: f1(cr.h + 2), rx: 9, style: `animation-delay:${i * 30}ms${color ? `;stroke:${color}` : ''}` }, scene.gL);
-        if (!isRest && i % p.C === 0) {
-          const bx = cr.x + 4, by = cr.y + 4;
-          el('circle', { class: 'badge', cx: f1(bx + 10), cy: f1(by + 10), r: 11, fill: color }, scene.gL);
-          text(scene.gL, 'badge-n', bx + 10, by + 10, String(grp + 1), { 'text-anchor': 'middle', 'dominant-baseline': 'central' });
-        }
-      });
-    }
+    function markGroups(p, cellsA) { markGroupCells(cellsA.filter((x) => x.tile), p.C, p.q, scene.gL); }
     function chainHTML(stage, p) {
       let h = `${fracHTML(a, b)}${opHTML('÷')}${fracHTML(c, d)}`;
       if (stage >= 1 && (p.ka > 1 || p.kb > 1)) h += `${opHTML('→')}${fracHTML(p.A, p.L)}${opHTML('÷')}${fracHTML(p.C, p.L)}`;
@@ -625,8 +634,395 @@
     ctl.reset();
   }
 
+  /* ================= bar scene: stacks of whole bars, for mixed numbers ================= */
+  class BarScene {
+    constructor(svg, opts = {}) { this.svg = svg; this.o = Object.assign({ barH: 44, gap: 10, mid: 120, midV: 96, maxBarW: 380 }, opts); }
+    /** rowsL / rowsR: how many bars each stack may need, so the picture does not jump between steps. */
+    layout(rowsL, rowsR) {
+      const W = Math.max(300, Math.round(this.svg.getBoundingClientRect().width) || 700);
+      const pad = 8, top = pad + 22, { barH, gap, mid, midV, maxBarW } = this.o;
+      const hL = Math.max(1, rowsL) * (barH + gap) - gap, hR = Math.max(1, rowsR) * (barH + gap) - gap;
+      this.W = W; this.horiz = W >= 640;
+      if (this.horiz) {
+        this.barW = Math.min(maxBarW, Math.floor((W - 2 * pad - mid) / 2));
+        const x0 = Math.round((W - (2 * this.barW + mid)) / 2);
+        this.L = { x: x0, y: top }; this.R = { x: x0 + this.barW + mid, y: top };
+        this.M = { x: x0 + this.barW + mid / 2, y: top + Math.max(hL, hR) / 2 };
+        this.H = top + Math.max(hL, hR) + pad;
+      } else {
+        this.barW = Math.min(maxBarW, W - 2 * pad);
+        const x = Math.round((W - this.barW) / 2);
+        this.L = { x, y: top }; this.R = { x, y: top + hL + midV + 22 };
+        this.M = { x: W / 2, y: top + hL + midV / 2 + 6 };
+        this.H = this.R.y + hR + pad;
+      }
+      this.svg.setAttribute('viewBox', `0 0 ${W} ${this.H}`);
+      this.svg.setAttribute('height', String(this.H));
+    }
+    clear() {
+      this.svg.innerHTML = '';
+      this.gL = el('g', { class: 'sq-left' }, this.svg);
+      this.gR = el('g', { class: 'sq-right' }, this.svg);
+      this.gM = el('g', { class: 'mid' }, this.svg);
+      this.gF = el('g', { class: 'flyers' }, this.svg);
+    }
+    bar(o, i) { return { x: o.x, y: o.y + i * (this.o.barH + this.o.gap), w: this.barW, h: this.o.barH }; }
+    cell(o, i, d, c) { const b = this.bar(o, i), cw = b.w / d; return { x: b.x + c * cw + 2, y: b.y + 2, w: cw - 4, h: b.h - 4 }; }
+    /** A stack of bars: each {n, d, cls?, cut?} is one bar with n of d shaded. Returns bars → cells. */
+    stack(o, bars, parent, name) {
+      if (name) text(parent, 'lname', o.x + this.barW / 2, o.y - 9, name);
+      return bars.map((spec, i) => {
+        const b = this.bar(o, i), { n, d } = spec;
+        el('rect', { class: `tray ${spec.cut ? 'broken' : ''}`, x: b.x - 3, y: b.y - 3, width: b.w + 6, height: b.h + 6, rx: 10 }, parent);
+        const cells = [];
+        for (let c = 0; c < d; c++) {
+          const cr = this.cell(o, i, d, c);
+          let tile = null, slot = null;
+          if (c < n) tile = tileEl(parent, d, `1/${d}`, spec.cls || '').set(cr.x, cr.y, cr.w, cr.h);
+          else slot = el('rect', { class: 'slot', x: f1(cr.x), y: f1(cr.y), width: f1(cr.w), height: f1(cr.h), rx: 6 }, parent);
+          cells.push({ bar: i, c, rect: cr, tile, slot });
+        }
+        if (spec.cut) for (let c = 1; c < d; c++) { const x = b.x + c * (b.w / d); el('line', { class: 'cut', x1: f1(x), x2: f1(x), y1: b.y + 3, y2: b.y + b.h - 3 }, parent); }
+        return cells;
+      });
+    }
+    sign(s, note = '') {
+      this.gM.innerHTML = '';
+      const { x, y } = this.M;
+      text(this.gM, 'lsign', x, y + 16, s);
+      if (note) text(this.gM, 'lhand mid', x, y + 50, note, { 'text-anchor': 'middle' });
+    }
+    flyTiles(moves, opts = {}) { return flyTiles(this.gF, moves, opts); }
+  }
+  /** Bars for a mixed number: `whole` full bars, then a bar with n of d (if n > 0). */
+  const barsOf = (whole, n, d, extra = {}) => [...Array.from({ length: whole }, () => Object.assign({ n: d, d }, extra.full || {})), ...(n > 0 ? [Object.assign({ n, d }, extra.part || {})] : [])];
+  const flat = (bars) => bars.flat();
+  const shadedOf = (bars) => flat(bars).filter((x) => x.tile);
+  const emptyOf = (bars) => flat(bars).filter((x) => !x.tile);
+  const piecesOnlyText = (w, n, d) => (w && d > 1 ? `${plural(w, 'whole')} ${w === 1 ? 'is' : 'are'} ${w * d} ${pieces(d, w * d)}${n ? `, plus ${n} more: ${w * d + n}/${d}` : `: ${w * d}/${d}`}. ` : '');
+
+  /* ---------- mixed-number inputs shared by the three lesson-2 pages ---------- */
+  function readMixed(root, side, maxW = 4, maxD = 12) {
+    const w = $(`.in-${side}w`, root).value.trim() === '' ? 0 : intIn(`.in-${side}w`, root);
+    const n = $(`.in-${side}n`, root).value.trim() === '' ? 0 : intIn(`.in-${side}n`, root);
+    const d = $(`.in-${side}d`, root).value.trim() === '' ? 1 : intIn(`.in-${side}d`, root);
+    if (![w, n, d].every(Number.isInteger)) return { err: 'Use whole numbers in every box.' };
+    if (w < 0 || w > maxW) return { err: `Keep the wholes from 0 to ${maxW}.` };
+    if (d < 1 || d > maxD) return { err: `Use bottom numbers from 2 to ${maxD}.` };
+    if (n < 0 || (d > 1 && n >= d)) return { err: 'Keep each part smaller than its bottom.' };
+    if (d === 1 && n) return { err: 'A whole number has no part. Leave the part boxes empty.' };
+    if (w === 0 && n === 0) return { err: 'Type at least a whole number or a part.' };
+    return { w, n, d: d === 1 ? 1 : d };
+  }
+  function presetMixedHTML(v) { return `${mixedHTML(v[0], v[1], v[2])}<span class="mk">${v[3]}</span>${mixedHTML(v[4], v[5], v[6])}`; }
+
+  /* ================= add and subtract: mixed numbers ================= */
+  function initAddSubMixed() {
+    const root = $('#addsubmixed'); if (!root) return;
+    const scene = new BarScene($('.stage-svg', root));
+    const eq = $('.eqline', root), msg = $('.msg', root);
+    const PRESETS = [[1, 3, 4, '+', 2, 1, 2], [2, 1, 3, '+', 1, 1, 2], [1, 1, 2, '+', 1, 1, 2], [1, 5, 8, '+', 0, 1, 2], [3, 1, 4, '−', 1, 3, 4], [2, 1, 2, '−', 1, 1, 4], [4, 0, 1, '−', 1, 2, 3], [2, 1, 6, '−', 0, 2, 3]];
+    let v = PRESETS[0].slice();
+    const key = (x) => x.join(' ');
+    function plan() {
+      const [wa, a, b, op, wb, c, d] = v;
+      const L = lcm(b, d), A = a * (L / b), C = c * (L / d);
+      const out = { wa, a, b, op, wb, c, d, L, A, C };
+      if (op === '+') {
+        const parts = A + C; out.carry = Math.floor(parts / L); out.rem = parts % L; out.W = wa + wb + out.carry; out.parts = parts;
+      } else {
+        out.borrow = A < C; out.A2 = out.borrow ? A + L : A; out.wa2 = out.borrow ? wa - 1 : wa; out.rem = out.A2 - C; out.W = out.wa2 - wb;
+      }
+      out.g = out.rem ? gcd(out.rem, L) : 1;
+      out.rowsL = op === '+' ? out.W + (out.rem ? 1 : 0) + (out.carry && !out.rem ? 0 : 0) : Math.max(wa + (a ? 1 : 0), 1);
+      if (op === '+') out.rowsL = Math.max(out.rowsL, wa + wb + 1 + (out.carry ? 1 : 0));
+      out.rowsR = Math.max(1, wb + (c ? 1 : 0));
+      return out;
+    }
+    /** Draws both stacks from a state; returns the bars so steps can animate between states. */
+    function draw(p, st) {
+      scene.layout(p.rowsL, p.rowsR); scene.clear();
+      const barsA = scene.stack(scene.L, st.A, scene.gL, st.nameA);
+      const barsB = scene.stack(scene.R, st.B, scene.gR, st.nameB);
+      if (st.ghostB) $$('.sq-right .tile', scene.svg).forEach((t) => t.classList.add('ghost'));
+      if (st.ghostBFull != null) barsB.slice(0, st.ghostBFull).forEach((bar) => bar.forEach((x) => x.tile && x.tile.g.classList.add('ghost')));
+      scene.sign(p.op, st.note || '');
+      return { barsA, barsB };
+    }
+    const take = { part: { cls: 'take' }, full: { cls: 'take' } };
+    function build() {
+      const p = plan(), { wa, a, b, op, wb, c, d, L, A, C } = p, list = [];
+      const nameA0 = mixedText(wa, a, b), nameB0 = mixedText(wb, c, d);
+      const same = (b === 1 || L === b) && (d === 1 || L === d);
+      const extraB = op === '−' ? take : {};
+      const s0 = { A: barsOf(wa, a, b), B: barsOf(wb, c, d, extraB), nameA: nameA0, nameB: nameB0 };
+      const s1 = { A: barsOf(wa, A, L), B: barsOf(wb, C, L, extraB), nameA: mixedText(wa, A, L), nameB: mixedText(wb, C, L), note: same ? '' : `${L}s` };
+      const total = `${nameA0} ${op} ${nameB0}`;
+      const eq0 = `${mixedHTML(wa, a, b)}${opHTML(op)}${mixedHTML(wb, c, d)}`;
+      const eq1 = same ? eq0 : `${eq0}${opHTML('→')}${mixedHTML(wa, A, L)}${opHTML(op)}${mixedHTML(wb, C, L)}`;
+      const ansHTML = () => mixedHTML(p.W, p.rem / p.g, L / p.g);
+      list.push({ text: `This is ${total}. A mixed number is wholes plus a part. ${op === '+' ? 'Add' : 'Take away'} the wholes and the parts separately.`, run: () => { draw(p, s0); eq.innerHTML = eq0; } });
+      if (!same) {
+        list.push({ text: `First make the bottoms of the parts the same. ${L} is the first number both ${b === 1 ? d : b} and ${d === 1 ? b : d} count to. ` + (L !== b && a ? `${a}/${b} becomes ${A}/${L}. ` : '') + (L !== d && c ? `${c}/${d} becomes ${C}/${L}. ` : '') + 'The wholes stay as they are.',
+          run: () => { draw(p, s1); eq.innerHTML = eq1; } });
+      }
+      if (op === '+') {
+        const s2 = { A: barsOf(wa + wb, A, L), B: barsOf(wb, C, L), nameA: mixedText(wa + wb, A, L), nameB: `${C}/${L} left to add`, ghostBFull: wb };
+        list.push({
+          text: wb ? `Add the wholes first: ${wa} + ${wb} = ${wa + wb} whole bars. The ${plural(wb, 'whole bar')} slide${wb === 1 ? 's' : ''} over.` : `There are no wholes to add on the right, so the wholes stay at ${wa}.`,
+          run: async (animate) => {
+            const { barsA, barsB } = draw(p, s1);
+            if (animate && wb) {
+              const moves = [];
+              barsB.slice(0, wb).forEach((bar, i) => bar.forEach((cell) => moves.push({ from: cell.rect, to: scene.cell(scene.L, wa + i, L, cell.c), d: L, label: `1/${L}`, delay: i * 180 })));
+              if (a) barsA[wa].forEach((cell) => moves.push({ from: cell.rect, to: scene.cell(scene.L, wa + wb, L, cell.c), d: L, label: `1/${L}`, delay: 0 }));
+              const srcA = a ? barsA[wa] : [];
+              barsB.slice(0, wb).forEach((bar) => bar.forEach((x) => x.tile.g.classList.add('ghost')));
+              srcA.forEach((x) => x.tile && x.tile.g.classList.add('ghost'));
+              await scene.flyTiles(moves, { dur: 650 });
+            }
+            draw(p, s2); eq.innerHTML = `${eq1}<span class="break"></span>${opHTML('wholes:')}<span class="whole">${wa}</span>${opHTML('+')}<span class="whole">${wb}</span>${opHTML('=')}<span class="whole">${wa + wb}</span>`;
+          },
+        });
+        const s3 = { A: barsOf(wa + wb + p.carry, p.rem, L), B: barsOf(wb, C, L), nameA: mixedText(wa + wb + p.carry, p.rem, L), nameB: 'added', ghostB: true };
+        list.push({
+          text: `Now the parts: ${A}/${L} + ${C}/${L} = ${p.parts}/${L}.` + (p.carry ? ` That is ${p.rem ? 'more than one bar!' : 'exactly one bar!'} ${L} pieces fill a whole bar${p.rem ? `, with ${p.rem} left over` : ''}. So ${p.parts}/${L} = ${mixedText(1, p.rem, L)}, and the wholes go up to ${wa + wb + 1}.` : ' The pieces slide into the part bar.'),
+          run: async (animate) => {
+            const { barsA, barsB } = draw(p, s2);
+            if (animate && C) {
+              const sources = barsB[wb] ? barsB[wb].filter((x) => x.tile) : [];
+              const targets = [];
+              const partBar = barsA[wa + wb];
+              if (partBar) partBar.filter((x) => !x.tile).forEach((x) => targets.push(x.rect));
+              for (let c2 = 0; targets.length < sources.length; c2++) targets.push(scene.cell(scene.L, wa + wb + (partBar ? 1 : 0), L, c2));
+              const moves = sources.map((sc, i) => ({ from: sc.rect, to: targets[i], d: L, label: `1/${L}` }));
+              await scene.flyTiles(moves, { dur: 650, stagger: 110, onStart: (m) => { const sc = sources.find((x) => x.rect === m.from); if (sc) sc.tile.g.classList.add('ghost'); } });
+            }
+            draw(p, s3); eq.innerHTML = `${eq1}<span class="break"></span>${opHTML('parts:')}${fracHTML(A, L)}${opHTML('+')}${fracHTML(C, L)}${opHTML('=')}${fracHTML(p.parts, L)}${p.carry ? `${opHTML('=')}${mixedHTML(1, p.rem, L)}` : ''}`;
+          },
+        });
+      } else {
+        const sBreak = { A: [...barsOf(p.wa2, 0, L), ...(p.borrow ? [{ n: L, d: L, cut: true }] : []), ...barsOf(0, A, L)], B: barsOf(wb, C, L, take), nameA: p.borrow ? `${p.wa2} and ${p.A2}/${L}` : mixedText(wa, A, L), nameB: mixedText(wb, C, L) };
+        if (p.borrow) {
+          list.push({ text: `${A ? `Look at the parts: ${A}/${L} is smaller than ${C}/${L}, so you cannot take ${C} pieces from ${A}.` : `There is no part to take ${C}/${L} from.`} Break one whole bar into ${L} pieces. Now the parts are ${L} + ${A} = ${p.A2} pieces, and ${plural(p.wa2, 'whole bar')} ${isAre(p.wa2)} left.`,
+            run: () => { draw(p, sBreak); eq.innerHTML = `${eq1}${opHTML('→')}<span class="mixed"><span class="w">${p.wa2}</span>${fracHTML(p.A2, L)}</span>${opHTML(op)}${mixedHTML(wb, C, L)}`; } });
+        }
+        const s2 = { A: barsOf(p.wa2, p.rem, L), B: barsOf(wb, C, L, take), nameA: mixedText(p.wa2, p.rem, L), nameB: `${C}/${L} taken`, ghostB: false };
+        list.push({
+          text: `Take away the parts: ${p.A2}/${L} − ${C}/${L} = ${p.rem}/${L}.`,
+          run: async (animate) => {
+            const { barsA, barsB } = draw(p, sBreak);
+            if (animate && C) {
+              const sources = shadedOf(barsA.slice(p.wa2)).reverse().slice(0, C);
+              const targets = barsB[wb] ? barsB[wb].filter((x) => x.tile) : [];
+              targets.forEach((t) => t.tile.g.classList.add('ghost'));
+              const moves = sources.map((sc, i) => ({ from: sc.rect, to: targets[i].rect, d: L, label: `1/${L}` }));
+              await scene.flyTiles(moves, { dur: 650, stagger: 110, onStart: (m) => { const sc = sources.find((x) => x.rect === m.from); if (sc) sc.tile.g.classList.add('ghost'); } });
+            }
+            const { barsB: bb } = draw(p, s2); if (bb[wb]) bb[wb].forEach((x) => x.tile && x.tile.g.classList.add('ghost'));
+            eq.innerHTML = `${eq1}<span class="break"></span>${opHTML('parts:')}${fracHTML(p.A2, L)}${opHTML('−')}${fracHTML(C, L)}${opHTML('=')}${fracHTML(p.rem, L)}`;
+          },
+        });
+        const s3 = { A: barsOf(p.W, p.rem, L), B: barsOf(wb, C, L, take), nameA: mixedText(p.W, p.rem, L), nameB: 'taken away', ghostB: true };
+        list.push({
+          text: wb ? `Now the wholes: ${p.wa2} − ${wb} = ${p.W}. ${plural(wb, 'whole bar')} ${wb === 1 ? 'goes' : 'go'} away.` : `There are no wholes to take away, so ${plural(p.wa2, 'whole bar')} stay${p.wa2 === 1 ? 's' : ''}.`,
+          run: async (animate) => {
+            const { barsA, barsB } = draw(p, s2); if (barsB[wb]) barsB[wb].forEach((x) => x.tile && x.tile.g.classList.add('ghost'));
+            if (animate && wb) {
+              const moves = [];
+              for (let i = 0; i < wb; i++) barsA[p.wa2 - 1 - i].forEach((cell) => moves.push({ from: cell.rect, to: scene.cell(scene.R, wb - 1 - i, L, cell.c), d: L, label: `1/${L}`, delay: i * 180 }));
+              for (let i = 0; i < wb; i++) barsA[p.wa2 - 1 - i].forEach((x) => x.tile.g.classList.add('ghost'));
+              await scene.flyTiles(moves, { dur: 650 });
+            }
+            draw(p, s3); eq.innerHTML = `${eq1}<span class="break"></span>${opHTML('wholes:')}<span class="whole">${p.wa2}</span>${opHTML('−')}<span class="whole">${wb}</span>${opHTML('=')}<span class="whole">${p.W}</span>`;
+          },
+        });
+      }
+      const finalState = op === '+' ? { A: barsOf(p.W, p.rem, L), B: barsOf(wb, C, L), nameA: mixedText(p.W, p.rem, L), nameB: 'added', ghostB: true } : { A: barsOf(p.W, p.rem, L), B: barsOf(wb, C, L, take), nameA: mixedText(p.W, p.rem, L), nameB: 'taken away', ghostB: true };
+      const simp = p.rem ? simplifyNote(p.rem, L) : 'No part is left, so the answer is a whole number.';
+      const Ap = wa * b + a, Cp = wb * d + c, Lp = L, A2p = Ap * (L / b), C2p = Cp * (L / d), tot = op === '+' ? A2p + C2p : A2p - C2p;
+      list.push({
+        text: `Put it together: ${p.W} ${p.W === 1 ? 'whole' : 'wholes'}${p.rem ? ` and ${p.rem}/${L}` : ''}. ${simp} So ${total} = ${mixedText(p.W, p.rem / p.g, L / p.g)}.`,
+        run: () => { draw(p, finalState); eq.innerHTML = `${eq0}${opHTML('=')}${ansHTML()}<span class="break"></span><span class="dim">${opHTML('Another way, pieces only:')}${fracHTML(Ap, b)}${opHTML(op)}${fracHTML(Cp, d)}${opHTML('=')}${fracHTML(A2p, Lp)}${opHTML(op)}${fracHTML(C2p, Lp)}${opHTML('=')}${fracHTML(tot, Lp)}${opHTML('=')}${ansHTML()}</span>`; },
+      });
+      return list;
+    }
+    const ctl = controller(root, scene, build, () => `Ready. ${mixedText(v[0], v[1], v[2])} ${v[3]} ${mixedText(v[4], v[5], v[6])}. Press Start.`);
+    function pick(x) { v = x.slice(); $$('.presets .chip', root).forEach((ch) => ch.setAttribute('aria-pressed', String(ch.dataset.k === key(v)))); msg.textContent = ''; ctl.reset(); }
+    $('.presets', root).innerHTML = PRESETS.map((x) => `<button class="chip" type="button" data-k="${key(x)}" aria-pressed="${key(x) === key(v)}">${presetMixedHTML(x)}</button>`).join('');
+    $('.presets', root).addEventListener('click', (e) => { const ch = e.target.closest('.chip'); if (ch) pick(ch.dataset.k.split(' ').map((x, i) => (i === 3 ? x : Number(x)))); });
+    $('form.custom', root).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const A = readMixed(root, 'a'), B = readMixed(root, 'b'), op = $('.in-op', root).value;
+      if (A.err || B.err) { msg.textContent = A.err || B.err; return; }
+      const valA = A.w + A.n / A.d, valB = B.w + B.n / B.d;
+      if (op === '+' && valA + valB > 6 + 1e-9) { msg.textContent = 'Keep the answer to 6 wholes or fewer.'; return; }
+      if (op === '−' && valA < valB) { msg.textContent = 'Put the bigger number first when you take away.'; return; }
+      pick([A.w, A.n, A.d, op, B.w, B.n, B.d]);
+    });
+    ctl.reset();
+  }
+
+  /* ================= multiply: mixed numbers (area model) ================= */
+  function initMultiplyMixed() {
+    const root = $('#multiplymixed'); if (!root) return;
+    const svg = $('.stage-svg', root);
+    const bars = new BarScene(svg);
+    const eq = $('.eqline', root), msg = $('.msg', root);
+    const PRESETS = [[2, 1, 2, '×', 1, 1, 3], [1, 1, 2, '×', 0, 2, 3], [0, 5, 8, '×', 4, 0, 1], [1, 1, 2, '×', 4, 0, 1], [2, 0, 1, '×', 0, 3, 4], [1, 1, 4, '×', 1, 1, 2], [3, 1, 3, '×', 0, 3, 5], [2, 2, 3, '×', 1, 1, 2]];
+    let v = PRESETS[0].slice();
+    const key = (x) => x.join(' ');
+    function plan() {
+      const [wa, a, b, , wc, c, d] = v;
+      const Ap = wa * b + a, Cp = wc * d + c, top = Ap * Cp, bot = b * d;
+      const q = Math.floor(top / bot), r = top % bot, g = r ? gcd(r, bot) : 1;
+      return { wa, a, b, wc, c, d, Ap, Cp, top, bot, q, r, g };
+    }
+    function drawBars(p, cut) {
+      const rowsL = p.wa + (p.a ? 1 : 0), rowsR = p.wc + (p.c ? 1 : 0);
+      bars.layout(Math.max(1, rowsL), Math.max(1, rowsR)); bars.clear();
+      const extra = cut ? { full: { cut: true } } : {};
+      bars.stack(bars.L, barsOf(p.wa, p.a, p.b, extra), bars.gL, cut ? `${p.Ap}/${p.b}` : mixedText(p.wa, p.a, p.b));
+      bars.stack(bars.R, barsOf(p.wc, p.c, p.d, extra), bars.gR, cut ? `${p.Cp}/${p.d}` : mixedText(p.wc, p.c, p.d));
+      bars.sign('×');
+    }
+    /** The area model: a rectangle with sides Ap/b and Cp/d (longer side across), one unit square outlined. */
+    function orient(p) {
+      const swap = p.Cp / p.d > p.Ap / p.b;
+      return swap ? { an: p.Cp, ad: p.d, dn: p.Ap, dd: p.b } : { an: p.Ap, ad: p.b, dn: p.Cp, dd: p.d };
+    }
+    function drawArea(p, stage) {
+      const W = Math.max(300, Math.round(svg.getBoundingClientRect().width) || 700), pad = 8, top = pad + 26;
+      const o = orient(p);
+      const wUnits = o.an / o.ad, hUnits = o.dn / o.dd;
+      const U = Math.max(40, Math.min(170, Math.floor((W - 2 * pad) / wUnits), Math.floor(360 / hUnits)));
+      const rw = wUnits * U, rh = hUnits * U, x0 = Math.round((W - rw) / 2), y0 = top;
+      svg.innerHTML = '';
+      svg.setAttribute('viewBox', `0 0 ${W} ${Math.ceil(y0 + rh + pad + 24)}`); svg.setAttribute('height', String(Math.ceil(y0 + rh + pad + 24)));
+      const g = el('g', {}, svg);
+      const unitShown = wUnits >= 1 && hUnits >= 1;
+      text(g, 'lname', W / 2, y0 - 9, `${o.an}/${o.ad} across, ${o.dn}/${o.dd} down. ${unitShown ? 'The dark square is 1 whole.' : 'Dashed lines mark each whole.'}`);
+      el('rect', { class: 'tray', x: x0 - 3, y: y0 - 3, width: rw + 6, height: rh + 6, rx: 10 }, g);
+      const cw = U / o.ad, rhh = U / o.dd, cells = [];
+      for (let j = 0; j < o.dn; j++) for (let i = 0; i < o.an; i++) {
+        const cr = { x: x0 + i * cw + 2, y: y0 + j * rhh + 2, w: cw - 4, h: rhh - 4 };
+        if (stage >= 2) tileEl(g, p.bot, `1/${p.bot}`, stage === 2 ? 'pop' : '').set(cr.x, cr.y, cr.w, cr.h).g.style.animationDelay = `${Math.min(j * o.an + i, 40) * 25}ms`;
+        else el('rect', { class: 'slot', x: f1(cr.x), y: f1(cr.y), width: f1(cr.w), height: f1(cr.h), rx: 6 }, g);
+        cells.push({ rect: cr });
+      }
+      for (let i = 1; i < Math.ceil(wUnits); i++) el('line', { class: 'unitline', x1: f1(x0 + i * U), x2: f1(x0 + i * U), y1: y0, y2: f1(y0 + rh) }, g);
+      for (let j = 1; j < Math.ceil(hUnits); j++) el('line', { class: 'unitline', x1: x0, x2: f1(x0 + rw), y1: f1(y0 + j * U), y2: f1(y0 + j * U) }, g);
+      if (unitShown) el('rect', { class: 'unit', x: x0, y: y0, width: U, height: U, rx: 4 }, g);
+      if (stage >= 3) markGroupCells(cells, p.bot, p.q, g);
+    }
+    function chain(stage, p) {
+      const [wa, a, b, , wc, c, d] = v;
+      let h = `${mixedHTML(wa, a, b)}${opHTML('×')}${mixedHTML(wc, c, d)}`;
+      if (stage >= 1) h += `${opHTML('→')}${fracHTML(p.Ap, p.b)}${opHTML('×')}${fracHTML(p.Cp, p.d)}`;
+      if (stage >= 3) h += `${opHTML('=')}${fracHTML(p.top, p.bot)}`;
+      if (stage >= 4) h += `${opHTML('=')}${mixedHTML(p.q, p.r / p.g, p.bot / p.g)}`;
+      return h;
+    }
+    function build() {
+      const p = plan(), [wa, a, b, , wc, c, d] = v;
+      const nA = mixedText(wa, a, b), nB = mixedText(wc, c, d);
+      const unitWords = p.bot === 1 ? 'Each piece is 1 whole.' : `A whole square holds ${b} × ${d} = ${p.bot} pieces, so each piece is 1/${p.bot}.`;
+      return [
+        { text: `This is ${nA} × ${nB}. × means "of". With mixed numbers, first write each one as pieces only.`, run: () => { drawBars(p, false); eq.innerHTML = chain(0, p); } },
+        { text: `${piecesOnlyText(wa, a, b)}${piecesOnlyText(wc, c, d)}${b === 1 ? `A whole number goes over 1: ${wa} is ${wa}/1. ` : ''}${d === 1 ? `A whole number goes over 1: ${wc} is ${wc}/1. ` : ''}So it is ${p.Ap}/${b} × ${p.Cp}/${d}.`, run: () => { drawBars(p, true); eq.innerHTML = chain(1, p); } },
+        { text: (() => { const o = orient(p); const unitShown = o.an / o.ad >= 1 && o.dn / o.dd >= 1; return `Draw a rectangle ${o.an}/${o.ad} across and ${o.dn}/${o.dd} down. ${unitShown ? 'The dark outline is one whole square.' : 'Each dashed line marks one whole.'} ${unitWords}`; })(), run: () => { drawArea(p, 1); eq.innerHTML = chain(1, p); } },
+        { text: (() => { const o = orient(p); return `Count the pieces in the rectangle: ${o.an} across × ${o.dn} down = ${p.top} pieces. So ${p.Ap}/${b} × ${p.Cp}/${d} = ${p.top}/${p.bot}. Top × top, bottom × bottom.`; })(), run: () => { drawArea(p, 2); eq.innerHTML = chain(3, p); } },
+        { text: (p.bot === 1 ? `${p.top} whole pieces: the answer is ${p.top}.` : `${p.bot} pieces make a whole. ${p.bot} goes into ${p.top} ${timesWord(p.q)}${p.r ? ` with ${p.r} left over: ${mixedText(p.q, p.r, p.bot)}` : ''}. ${p.r ? simplifyNote(p.r, p.bot) : 'No pieces are left over.'} So ${nA} × ${nB} = ${mixedText(p.q, p.r / p.g, p.bot / p.g)}.`), run: () => { drawArea(p, 3); eq.innerHTML = chain(4, p); } },
+      ];
+    }
+    const ctl = controller(root, bars, build, () => `Ready. ${mixedText(v[0], v[1], v[2])} × ${mixedText(v[4], v[5], v[6])}. Press Start.`);
+    function pick(x) { v = x.slice(); $$('.presets .chip', root).forEach((ch) => ch.setAttribute('aria-pressed', String(ch.dataset.k === key(v)))); msg.textContent = ''; ctl.reset(); }
+    $('.presets', root).innerHTML = PRESETS.map((x) => `<button class="chip" type="button" data-k="${key(x)}" aria-pressed="${key(x) === key(v)}">${presetMixedHTML(x)}</button>`).join('');
+    $('.presets', root).addEventListener('click', (e) => { const ch = e.target.closest('.chip'); if (ch) pick(ch.dataset.k.split(' ').map((x, i) => (i === 3 ? x : Number(x)))); });
+    $('form.custom', root).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const A = readMixed(root, 'a', 4, 10), B = readMixed(root, 'b', 4, 10);
+      if (A.err || B.err) { msg.textContent = A.err || B.err; return; }
+      if ((A.w + A.n / A.d) * (B.w + B.n / B.d) > 12 + 1e-9) { msg.textContent = 'Keep the answer to 12 or less so the picture fits.'; return; }
+      if ((A.w * A.d + A.n) * (B.w * B.d + B.n) > 60) { msg.textContent = 'That makes more than 60 small pieces. Try smaller numbers.'; return; }
+      pick([A.w, A.n, A.d, '×', B.w, B.n, B.d]);
+    });
+    ctl.reset();
+  }
+
+  /* ================= divide: mixed numbers ================= */
+  function initDivideMixed() {
+    const root = $('#dividemixed'); if (!root) return;
+    const scene = new BarScene($('.stage-svg', root));
+    const eq = $('.eqline', root), msg = $('.msg', root);
+    const PRESETS = [[2, 1, 2, '÷', 0, 1, 2], [1, 3, 4, '÷', 0, 1, 4], [3, 0, 1, '÷', 0, 3, 4], [1, 1, 2, '÷', 0, 1, 3], [2, 1, 4, '÷', 1, 1, 2], [3, 1, 3, '÷', 0, 2, 3], [2, 0, 1, '÷', 0, 2, 5], [1, 1, 2, '÷', 2, 0, 1]];
+    let v = PRESETS[0].slice();
+    const key = (x) => x.join(' ');
+    function plan() {
+      const [wa, a, b, , wc, c, d] = v;
+      const Ap = wa * b + a, Cp = wc * d + c, L = lcm(b, d), A2 = Ap * (L / b), C2 = Cp * (L / d);
+      const q = Math.floor(A2 / C2), r = A2 % C2, top = Ap * d, bot = b * Cp, g = gcd(top, bot);
+      const rowsL = Math.max(1, Math.ceil(A2 / L)), rowsR = Math.max(1, Math.ceil(C2 / L));
+      return { wa, a, b, wc, c, d, Ap, Cp, L, A2, C2, q, r, top, bot, g, rowsL, rowsR };
+    }
+    function stacks(p, mode) {
+      // mode 0: mixed as drawn; 1: pieces only (cut wholes); 2: same bottoms
+      scene.layout(p.rowsL, p.rowsR); scene.clear();
+      const dL = mode === 2 ? p.L : p.b, dR = mode === 2 ? p.L : p.d;
+      const nL = mode === 2 ? p.A2 : p.Ap, nR = mode === 2 ? p.C2 : p.Cp;
+      const toBars = (n, dd) => { const out = []; let left = n; while (left > 0) { out.push({ n: Math.min(left, dd), d: dd, cut: mode >= 1 && left >= dd }); left -= dd; } return out.length ? out : [{ n: 0, d: dd }]; };
+      const barsA = scene.stack(scene.L, toBars(nL, dL), scene.gL, mode === 0 ? mixedText(p.wa, p.a, p.b) : `${nL}/${dL}`);
+      const barsB = scene.stack(scene.R, toBars(nR, dR), scene.gR, mode === 0 ? mixedText(p.wc, p.c, p.d) : (mode === 2 && p.C2 > 1 ? `a group of ${p.C2}` : `${nR}/${dR}`));
+      scene.sign('÷', mode === 2 && p.L !== p.b ? `${p.L}s` : '');
+      return { barsA, barsB };
+    }
+    function chain(stage, p) {
+      const [wa, a, b, , wc, c, d] = v;
+      let h = `${mixedHTML(wa, a, b)}${opHTML('÷')}${mixedHTML(wc, c, d)}`;
+      if (stage >= 1) h += `${opHTML('→')}${fracHTML(p.Ap, b)}${opHTML('÷')}${fracHTML(p.Cp, d)}`;
+      if (stage >= 2 && (p.L !== b || p.L !== d)) h += `${opHTML('→')}${fracHTML(p.A2, p.L)}${opHTML('÷')}${fracHTML(p.C2, p.L)}`;
+      if (stage >= 3) h += `${opHTML('=')}${valueHTML(p.A2, p.C2)}`;
+      if (stage >= 4) h += `<span class="break"></span>${fracHTML(p.Ap, b)}${opHTML('×')}${fracHTML(d, p.Cp)}${opHTML('=')}${fracHTML(p.top, p.bot)}${p.g > 1 || p.top > p.bot ? `${opHTML('=')}${valueHTML(p.top / p.g, p.bot / p.g)}` : ''}`;
+      return h;
+    }
+    function build() {
+      const p = plan(), [wa, a, b, , wc, c, d] = v, list = [];
+      const nA = mixedText(wa, a, b), nB = mixedText(wc, c, d);
+      list.push({ text: `This is ${nA} ÷ ${nB}. ÷ asks: how many ${nB}s fit into ${nA}? With mixed numbers, first write each one as pieces only.`, run: () => { stacks(p, 0); eq.innerHTML = chain(0, p); } });
+      list.push({ text: `${piecesOnlyText(wa, a, b)}${piecesOnlyText(wc, c, d)}${b === 1 ? `A whole number goes over 1: ${wa} is ${wa}/1. ` : ''}${d === 1 ? `A whole number goes over 1: ${wc} is ${wc}/1. ` : ''}So it is ${p.Ap}/${b} ÷ ${p.Cp}/${d}.`, run: () => { stacks(p, 1); eq.innerHTML = chain(1, p); } });
+      const sameBottoms = p.L === b && p.L === d;
+      if (!sameBottoms) {
+        list.push({ text: `Make the bottoms the same so the pieces match. ${p.L} is the first number both ${b} and ${d} count to. ` + (p.L !== b ? `${p.Ap}/${b} becomes ${p.A2}/${p.L}. ` : '') + (p.L !== d ? `${p.Cp}/${d} becomes ${p.C2}/${p.L}. ` : ''), run: () => { stacks(p, 2); eq.innerHTML = chain(2, p); } });
+      }
+      const fit = p.q === 0 ? 'Not even one whole group fits.' : `${plural(p.q, 'whole group')} fit${p.q === 1 ? 's' : ''}.`;
+      const gr = p.r ? gcd(p.r, p.C2) : 1;
+      const rest = p.r ? ` ${plural(p.r, 'piece')} left over, and a group needs ${p.C2}, so that is ${p.r}/${p.C2} of a group${gr > 1 ? `, which is ${p.r / gr}/${p.C2 / gr}` : ''}.` : '';
+      list.push({ text: `${p.C2 === 1 ? `Count the pieces on the left. ${plural(p.A2, 'piece')} fit.` : `Count groups of ${p.C2} across the bars on the left. ${fit}`}${rest} So ${nA} ÷ ${nB} = ${valueText(p.A2, p.C2)}.`,
+        run: () => { const { barsA } = stacks(p, 2); markGroupCells(shadedOf(barsA), p.C2, p.q, scene.gL); eq.innerHTML = chain(3, p); } });
+      list.push({ text: `The shortcut gives the same answer. Keep ${p.Ap}/${b}. Change ÷ to ×. Flip ${p.Cp}/${d} to ${d}/${p.Cp}. ${p.Ap} × ${d} = ${p.top} on top, ${b} × ${p.Cp} = ${p.bot} on the bottom. ${p.g > 1 || p.top > p.bot ? simplifyNote(p.top, p.bot) : `Only 1 goes into ${p.top} and ${p.bot}, so ${p.top}/${p.bot} is done.`} Same answer: ${valueText(p.A2, p.C2)}.`,
+        run: () => { const { barsA } = stacks(p, 2); markGroupCells(shadedOf(barsA), p.C2, p.q, scene.gL); eq.innerHTML = chain(4, p); } });
+      return list;
+    }
+    const ctl = controller(root, scene, build, () => `Ready. ${mixedText(v[0], v[1], v[2])} ÷ ${mixedText(v[4], v[5], v[6])}. Press Start.`);
+    function pick(x) { v = x.slice(); $$('.presets .chip', root).forEach((ch) => ch.setAttribute('aria-pressed', String(ch.dataset.k === key(v)))); msg.textContent = ''; ctl.reset(); }
+    $('.presets', root).innerHTML = PRESETS.map((x) => `<button class="chip" type="button" data-k="${key(x)}" aria-pressed="${key(x) === key(v)}">${presetMixedHTML(x)}</button>`).join('');
+    $('.presets', root).addEventListener('click', (e) => { const ch = e.target.closest('.chip'); if (ch) pick(ch.dataset.k.split(' ').map((x, i) => (i === 3 ? x : Number(x)))); });
+    $('form.custom', root).addEventListener('submit', (e) => {
+      e.preventDefault();
+      const A = readMixed(root, 'a'), B = readMixed(root, 'b');
+      if (A.err || B.err) { msg.textContent = A.err || B.err; return; }
+      const L = lcm(A.d, B.d);
+      if ((A.w * A.d + A.n) * (L / A.d) > 48) { msg.textContent = 'That makes more than 48 small pieces. Try smaller numbers.'; return; }
+      pick([A.w, A.n, A.d, '÷', B.w, B.n, B.d]);
+    });
+    ctl.reset();
+  }
+
   initSimplify();
   initAddSub();
   initMultiply();
   initDivide();
+  initAddSubMixed();
+  initMultiplyMixed();
+  initDivideMixed();
 })();
