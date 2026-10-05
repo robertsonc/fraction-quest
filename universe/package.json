@@ -1,0 +1,36 @@
+{
+  "name": "fraction-quest-universe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Fraction Quest Universe: a world-based fractions tutor. Static, offline, no backend.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run test/unit",
+    "test:property": "vitest run test/property",
+    "test:e2e": "playwright test",
+    "scan": "node scripts/scan-strings.mjs",
+    "check": "npm run typecheck && npm run test && npm run scan",
+    "lighthouse": "lighthouse http://127.0.0.1:4173/world/ --chrome-flags=\"--headless=new --no-sandbox\" --only-categories=accessibility,best-practices,performance --output=json --output-path=./lighthouse.json --quiet && node scripts/lighthouse-check.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.6.4",
+    "fake-indexeddb": "6.2.5",
+    "fast-check": "4.10.2",
+    "jsdom": "30.1.2",
+    "lighthouse": "13.5.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  }
+}

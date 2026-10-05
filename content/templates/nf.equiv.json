@@ -1,0 +1,366 @@
+[
+  {
+    "id": "equiv.missing-numerator.area.small",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 6
+      },
+      "k": {
+        "min": 2,
+        "max": 3
+      },
+      "missing": "numerator"
+    },
+    "misconceptions": [
+      "scales-denominator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.missing-denominator.area.small",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 6
+      },
+      "k": {
+        "min": 2,
+        "max": 3
+      },
+      "missing": "denominator"
+    },
+    "misconceptions": [
+      "scales-numerator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.is-equivalent.area.small",
+    "skillId": "nf.equiv",
+    "generator": "equivIsEquivalent",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 5
+      },
+      "k": {
+        "min": 2,
+        "max": 3
+      }
+    },
+    "misconceptions": [
+      "adds-to-both",
+      "scales-numerator-only",
+      "scales-denominator-only",
+      "different-scale-factors",
+      "whole-number-bias"
+    ]
+  },
+  {
+    "id": "equiv.missing-numerator.area",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 12
+      },
+      "k": {
+        "min": 2,
+        "max": 6
+      },
+      "missing": "numerator"
+    },
+    "misconceptions": [
+      "scales-denominator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.missing-denominator.area",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 12
+      },
+      "k": {
+        "min": 2,
+        "max": 6
+      },
+      "missing": "denominator"
+    },
+    "misconceptions": [
+      "scales-numerator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.missing-numerator.bar",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "bar",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 8
+      },
+      "k": {
+        "min": 2,
+        "max": 6
+      },
+      "missing": "numerator"
+    },
+    "misconceptions": [
+      "scales-denominator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.missing-part.line",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "line",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 6
+      },
+      "k": {
+        "min": 2,
+        "max": 4
+      },
+      "missing": "either"
+    },
+    "misconceptions": [
+      "counts-ticks-not-gaps",
+      "scales-denominator-only",
+      "scales-numerator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.missing-part.symbol",
+    "skillId": "nf.equiv",
+    "generator": "equivMissingPart",
+    "rep": "symbol",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 12
+      },
+      "k": {
+        "min": 2,
+        "max": 6
+      },
+      "missing": "either"
+    },
+    "misconceptions": [
+      "scales-denominator-only",
+      "scales-numerator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "equiv.is-equivalent.area",
+    "skillId": "nf.equiv",
+    "generator": "equivIsEquivalent",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 8
+      },
+      "k": {
+        "min": 2,
+        "max": 4
+      }
+    },
+    "misconceptions": [
+      "adds-to-both",
+      "scales-numerator-only",
+      "scales-denominator-only",
+      "different-scale-factors",
+      "whole-number-bias"
+    ]
+  },
+  {
+    "id": "equiv.is-equivalent.symbol",
+    "skillId": "nf.equiv",
+    "generator": "equivIsEquivalent",
+    "rep": "symbol",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 9
+      },
+      "k": {
+        "min": 2,
+        "max": 4
+      }
+    },
+    "misconceptions": [
+      "adds-to-both",
+      "scales-numerator-only",
+      "scales-denominator-only",
+      "different-scale-factors",
+      "whole-number-bias"
+    ]
+  },
+  {
+    "id": "equiv.find-pair.set",
+    "skillId": "nf.equiv",
+    "generator": "equivFindPair",
+    "rep": "set",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 6
+      },
+      "maxD": 60
+    },
+    "misconceptions": [
+      "copies-fraction",
+      "scales-numerator-only",
+      "scales-denominator-only",
+      "adds-to-both",
+      "different-scale-factors"
+    ]
+  },
+  {
+    "id": "equiv.find-pair.symbol",
+    "skillId": "nf.equiv",
+    "generator": "equivFindPair",
+    "rep": "symbol",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 10
+      },
+      "maxD": 60
+    },
+    "misconceptions": [
+      "copies-fraction",
+      "scales-numerator-only",
+      "scales-denominator-only",
+      "adds-to-both",
+      "different-scale-factors"
+    ]
+  },
+  {
+    "id": "meaning.name-fraction.area",
+    "skillId": "nf.meaning",
+    "generator": "nameFraction",
+    "rep": "area",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 12
+      }
+    },
+    "misconceptions": [
+      "part-over-part",
+      "inverted-fraction"
+    ]
+  },
+  {
+    "id": "meaning.name-fraction.line",
+    "skillId": "nf.meaning",
+    "generator": "nameFraction",
+    "rep": "line",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 8
+      }
+    },
+    "misconceptions": [
+      "counts-ticks-not-gaps",
+      "part-over-part",
+      "inverted-fraction"
+    ]
+  },
+  {
+    "id": "meaning.name-fraction.set",
+    "skillId": "nf.meaning",
+    "generator": "nameFraction",
+    "rep": "set",
+    "params": {
+      "d": {
+        "min": 2,
+        "max": 10
+      }
+    },
+    "misconceptions": [
+      "part-over-part",
+      "inverted-fraction"
+    ]
+  },
+  {
+    "id": "ops.mult-fact.symbol",
+    "skillId": "ops.multfacts",
+    "generator": "multFact",
+    "rep": "symbol",
+    "params": {
+      "a": {
+        "min": 2,
+        "max": 9
+      },
+      "b": {
+        "min": 2,
+        "max": 9
+      }
+    },
+    "misconceptions": [
+      "adds-instead",
+      "off-by-one-group",
+      "arith-slip"
+    ]
+  },
+  {
+    "id": "ops.mult-fact.set",
+    "skillId": "ops.multfacts",
+    "generator": "multFact",
+    "rep": "set",
+    "params": {
+      "a": {
+        "min": 2,
+        "max": 6
+      },
+      "b": {
+        "min": 2,
+        "max": 6
+      }
+    },
+    "misconceptions": [
+      "adds-instead",
+      "off-by-one-group",
+      "arith-slip"
+    ]
+  }
+]

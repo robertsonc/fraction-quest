@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -135,6 +137,33 @@ def page_shell(section: dict, slug: str, title: str, description: str, body: str
 """
 
 
+def build_world() -> None:
+    """Builds Fraction Quest Universe (universe/, Vite + TypeScript) and copies its output to public/world/.
+
+    The Universe has its own hand-written service worker scoped to /world/ and its own precache list, so it is
+    not added to the FQ2 service worker below. Set FQ_SKIP_WORLD=1 to build only the classic app.
+    """
+    if os.environ.get("FQ_SKIP_WORLD") == "1":
+        LOG.info("skipping universe build (FQ_SKIP_WORLD=1)")
+        return
+    uni = ROOT / "universe"
+    if not (uni / "node_modules").exists():
+        LOG.info("installing universe dependencies")
+        subprocess.run(["npm", "ci", "--ignore-scripts", "--no-audit", "--no-fund"], cwd=uni, check=True, timeout=600)
+    LOG.info("building universe")
+    subprocess.run(["npm", "run", "build"], cwd=uni, check=True, timeout=600)
+    dest = OUT / "world"
+    shutil.rmtree(dest, ignore_errors=True)
+    shutil.copytree(uni / "dist", dest)
+    html = (dest / "index.html").read_text(encoding="utf-8")
+    if re.search(r"<script(?![^>]*\ssrc=)", html):
+        raise RuntimeError("world/index.html contains an inline script, which the CSP forbids")
+    check_no_inline_handlers(html, "world/index.html")
+    for js in (dest / "assets").glob("*.js"):
+        if re.search(r"\beval\(|new Function\(", js.read_text(encoding="utf-8")):
+            raise RuntimeError(f"{js.name} uses eval or new Function, which the CSP forbids")
+
+
 def build() -> str:
     app_js = "".join(read(p) for p in APP_PARTS) + SW_REGISTER
     check_js(app_js, "app.js")
@@ -205,6 +234,7 @@ def build() -> str:
     sw = (ROOT / "sw.template.js").read_text(encoding="utf-8")
     sw = sw.replace("__VERSION__", version).replace("__ASSETS__", ",\n  ".join(f"'{a}'" for a in assets))
     (OUT / "sw.js").write_text(sw, encoding="utf-8")
+    build_world()
     return version
 
 

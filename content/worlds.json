@@ -1,0 +1,7 @@
+[
+  { "id": "nf", "titleKey": "world.nf", "status": "open", "x": 500, "y": 330, "tint": "#3B7EE0" },
+  { "id": "nbt", "titleKey": "world.nbt", "status": "soon", "x": 180, "y": 160, "tint": "#E5567E" },
+  { "id": "oa", "titleKey": "world.oa", "status": "soon", "x": 820, "y": 150, "tint": "#F2C12E" },
+  { "id": "md", "titleKey": "world.md", "status": "soon", "x": 170, "y": 470, "tint": "#3FAE68" },
+  { "id": "g", "titleKey": "world.g", "status": "soon", "x": 830, "y": 480, "tint": "#8E5AD5" }
+]

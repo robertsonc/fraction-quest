@@ -1,8 +1,9 @@
 # Fraction Quest Universe: design
 
-Status: Phase 0 (plan). No world code exists yet. This document is the contract for Phase 1
-and is updated whenever a decision changes. Sections marked **Decision** are settled; sections
-marked **Open** need the owner's call before the phase that depends on them.
+Status: Phase 1 (vertical slice, equivalent fractions) built; see section 13 for what changed
+while building and what was verified. This document is the contract for the next phase and is
+updated whenever a decision changes. Sections marked **Decision** are settled; sections marked
+**Open** need the owner's call before the phase that depends on them.
 
 The existing app in this repository is Fraction Quest 2 (FQ2): `src/core.js`, `src/st_a.js` to
 `src/st_d.js`, `src/glass.css`, `src/style.css`, built by `build_cf.py`. The brief's
@@ -644,11 +645,88 @@ FQ2 progress import, Universe moves to `/`.
 Content drops per world. Each starts with its own skill graph and misconception catalog added to
 this document.
 
-## 12. Open questions (answer before Phase 1 starts; defaults in bold)
+## 12. Open questions (Phase 1 went with the defaults in bold; still changeable)
 
 1. Review scheduling: **sessions on distinct days** (5.3 S1) or raw sessions as written?
-2. Dyslexia font: **OpenDyslexic** pending license text check, or Atkinson Hyperlegible?
+   Implemented as `CONSTANTS.reviewCountsDistinctDaysOnly` in `universe/src/content/index.ts`.
+2. Dyslexia font: **OpenDyslexic** (SIL Open Font License 1.1, license text shipped next to the
+   woff2 files) or Atkinson Hyperlegible?
 3. Phase 1 URL: **`/world/` beside FQ2** or replace `/` now?
 4. Number range for `nf.equiv` items: **denominators 2 to 12, scale factors 2 to 6** (products
-   to 72), matching FQ2's readable tile limit of 48 per bar for the bar representation, with
-   the area model taking the larger ones.
+   to 72). Hook, walkthrough and micro-lesson pictures use a smaller range (denominators 2 to 6,
+   factors 2 to 3) so the first picture a learner sees is readable.
+
+## 13. Phase 1 record
+
+### 13.1 Decisions changed or added during the build
+
+- **Prerequisite fallback (5.1, 5.2 R2).** When a prerequisite that has no prerequisites of its
+  own fails its quick check below depth 2, the engine now drops to the next unvisited
+  prerequisite of the skills above it on the stack before calling the coach. In Fraction Falls
+  that is the only way depth 2 is reachable (`nf.equiv` -> `nf.meaning` -> `ops.multfacts`),
+  and it finds a second weak prerequisite instead of flagging after one. A skill with nothing
+  left to drop to still goes to CoachFlag (rule D1).
+- **Review ends when decided.** A spaced review stops after two right (pass) or two wrong
+  (fail) answers, like the quick check, instead of always asking three.
+- **Yes-or-no distractors stay proper.** An `is-equivalent` distractor that would reach one
+  whole (for example 3/4 with the top doubled) falls back to the bottom-only scaling so the one
+  picture can show it. Multi-whole scenes are Phase 2 (mixed numbers need them anyway).
+- **Two generator collisions found by the property suite and fixed:** 2 + 2 = 2 x 2 (the
+  "adds instead" misconception collided with the right answer; the generator excludes 2 x 2),
+  and the mixed-number conversion lost the sign on negative proper fractions.
+- **Practice marks the skill.** Entering practice directly moves a fresh skill to `practice`;
+  the lesson moves it to `learning` at the hook and to `practice` or `mastered` after the check.
+- **Keypad reveal.** FQ2's scroll-the-prompt-above-the-keypad logic was ported after the iPad
+  e2e run showed the on-screen keypad covering the Check button.
+- **Route changes reset scroll and hide the keypad.** Found by an instrumented e2e run: after a
+  practice item scrolled the page for the keypad, the next screen rendered with the top bar off
+  screen and the keypad still up.
+- **Lighthouse PWA category does not exist** in Lighthouse 12 and later. The build runs
+  accessibility, best practices and performance (all 100 on the profiles screen, Lighthouse
+  13.5.0); installability is covered by the manifest and service worker e2e test and by the
+  strict-CSP checks in `build_cf.py` (no inline scripts, no eval).
+- **Test hooks.** With `?test=1` the app exposes `window.__fqu` (current item, a clock the suite
+  can advance past the 3.5 s guess threshold, deterministic seeds, misconception answers). It is
+  absent without the flag.
+
+### 13.2 What exists (universe/, content/)
+
+Engine: `rational.ts`, `rng.ts`, generators for `equivMissingPart`, `equivIsEquivalent`,
+`equivFindPair`, `nameFraction`, `multFact` with step traces; 12 misconception predicates;
+`grade.ts`; hints with the key value masked; the adaptive reducer; mastery; spaced review.
+Store: IndexedDB v1 with migrations, recovery, memory fallback, export and import.
+UI: profiles (up to 8), map with five islands, skill screen, lesson flow (hook, walkthrough in
+two representations, guided with a pre-cut scaffold and a hint ladder, independent, knowledge
+check of 4 items across 3 representations), practice loop, micro-lessons, quick checks, return
+item with breadcrumb, coach flag with easy win and break, spaced review, coach view with print
+and export, settings (read-aloud, easier letters, solid panels, fewer moving things, theme,
+sound), on-screen keypad, Lumen the guide.
+
+### 13.3 Verification record (all run, not inferred)
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` (TypeScript 7.0.2, strict, exactOptionalPropertyTypes) | clean |
+| Unit and property tests (`vitest run`, 2000 fast-check runs per template, 16 templates) | 214 tests pass, 25 s |
+| Oracle cross-check: every generated item's answer equals the independent BigInt oracle | pass |
+| Every misconception mapping: produced wrong answer differs from the right answer and is detected; no predicate fires on the right answer | pass; deliberate overlaps are logged as warnings |
+| Walkthrough final state equals the engine answer, every lesson and micro-lesson, four representations, 150 parameterizations each (jsdom, real player and renderer) | pass |
+| String scan (content JSON and UI literals): no em or en dash, no licensed name, story names from the cast | clean |
+| Content lint: no dangling ids, check has 3 to 5 items over 2+ representations | clean |
+| Playwright, 1180x820 and 1366x1024 iPad (touch) and 1440x900 laptop: perfect, guessing, misconception, depth-2, review demotion, review pass, profiles and settings, store recovery, keyboard and 44 px targets, manifest and service worker | 30 of 30 pass, 1.5 min; zero console errors or failed requests; axe (WCAG 2 A and AA) clean on map, hook, item and coach |
+| Lighthouse 13.5.0 on the built site (accessibility, best practices, performance) | 100, 100, 100 |
+| `python3 build_cf.py` builds the classic app plus `public/world/` with the CSP checks | pass |
+
+### 13.4 Known gaps (honest list)
+
+- Manipulatives are tap-to-split (area, bar, number line, set) with tap-to-shade on pictures;
+  drag, stack and slide interactions from the brief are not built yet.
+- Representations in the knowledge check and practice cover area, bar, line, set and symbol,
+  but the number line and set pictures are simpler than the area and bar ones.
+- Read-aloud uses the device voices; it was exercised manually in Chromium only, and the e2e
+  suite checks the toggle, not speech output.
+- Dark mode and reduced transparency are implemented through the FQ2 tokens and were checked
+  by screenshot, not by a contrast test on every screen (axe runs on the light theme and once on
+  dark).
+- The FQ2 progress import (0.2 of section 0) is Phase 2 work.
+- The e2e suite runs Chromium only; WebKit (the iPad's engine) is not in the matrix.

@@ -1,0 +1,15 @@
+{
+  "guide": "Lumen",
+  "kids": ["Maya", "Theo", "Priya", "Jun", "Rosa", "Kofi", "Sam", "Lena", "Omar", "Nia"],
+  "animals": ["Biscuit", "Pepper", "Mochi"],
+  "places": ["the class garden", "the bake sale", "the bike trail", "the library", "the pool", "the park"],
+  "denylist": [
+    "Ragatha", "Gangle", "Soos", "Pomni", "Jax", "Zooble", "Kinger", "Caine", "Mabel", "Dipper",
+    "Pikachu", "Pokemon", "Mario", "Luigi", "Zelda", "Sonic", "Minecraft", "Roblox", "Fortnite",
+    "Elsa", "Anna", "Olaf", "Moana", "Simba", "Nemo", "Dory", "Woody", "Buzz", "Lightyear",
+    "Spider-Man", "Spiderman", "Batman", "Superman", "Iron Man", "Hulk", "Thor", "Avengers",
+    "Barbie", "Lego", "Peppa", "Bluey", "Bingo", "Paw Patrol", "SpongeBob", "Patrick Star",
+    "Harry Potter", "Hermione", "Hogwarts", "Pokémon", "Yoda", "Darth", "Jedi", "Star Wars",
+    "Mickey", "Minnie", "Donald Duck", "Goofy", "Disney", "Nintendo", "Oreo", "Doritos", "Coke", "Pepsi"
+  ]
+}

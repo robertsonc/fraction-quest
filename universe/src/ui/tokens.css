@@ -1,0 +1,143 @@
+/* ================= tokens: the glass light table, carried from Fraction Quest 2 =================
+   Three depths: level 1 = what you look at, level 2 = what you work in, level 3 = what you hold. */
+:root{
+  --field:#E6ECF7; --paper:#EEF3FB;
+  --ink:#17203D; --ink-2:#3C4667; --ink-3:#5C6686;
+  --surface:rgba(255,255,255,.58); --surface-solid:#FFFFFF; --surface-2:rgba(40,60,120,.07);
+  --line:rgba(60,82,140,.2); --slot:rgba(255,255,255,.5); --slot-line:rgba(70,92,150,.5);
+  --grid:rgba(56,96,160,.06); --grid-major:rgba(56,96,160,.11);
+  --pen-red:#B8322E; --pen-green:#157A4B; --pen-blue:#2453B8; --focus:#2453B8;
+  --gold:#E3A008;
+
+  --g-fill:linear-gradient(155deg,rgba(255,255,255,.66),rgba(255,255,255,.36));
+  --g-fill-hi:linear-gradient(155deg,rgba(255,255,255,.84),rgba(255,255,255,.56));
+  --g-edge:rgba(255,255,255,.8);
+  --g-spec:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.3);
+  --g-d1:0 18px 40px -26px rgba(26,40,90,.45),0 2px 6px -3px rgba(26,40,90,.16);
+  --g-d2:0 30px 60px -28px rgba(26,40,90,.55),0 6px 14px -8px rgba(26,40,90,.24);
+  --g-d3:0 40px 80px -30px rgba(15,25,70,.6),0 10px 24px -10px rgba(15,25,70,.3);
+  --g-blur:saturate(170%) blur(22px);
+
+  --c-fill:rgba(255,255,255,.56); --c-edge:rgba(255,255,255,.88); --c-ring:rgba(60,82,140,.16);
+  --c-spec:inset 0 1px 0 rgba(255,255,255,.95); --c-drop:0 6px 14px -10px rgba(26,40,90,.5);
+  --k-fill:rgba(255,255,255,.72); --a-fill:rgba(255,255,255,.5);
+  --w-fill:rgba(255,255,255,.8); --w-inset:inset 0 2px 4px rgba(26,40,90,.14);
+  --tint:linear-gradient(180deg,#4A74EC,#2B4EC0); --tint-glow:0 10px 22px -10px rgba(43,78,192,.75);
+
+  --pools:
+    radial-gradient(44vmax 36vmax at 6% 8%, rgba(59,126,224,.36), transparent 70%),
+    radial-gradient(38vmax 30vmax at 96% 4%, rgba(229,86,126,.26), transparent 70%),
+    radial-gradient(46vmax 38vmax at 92% 92%, rgba(63,174,104,.28), transparent 70%),
+    radial-gradient(40vmax 34vmax at 6% 96%, rgba(242,193,46,.34), transparent 70%),
+    radial-gradient(34vmax 28vmax at 52% 48%, rgba(142,90,213,.16), transparent 72%);
+
+  --sans:'Lexend',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --hand:'Patrick Hand','Segoe Print','Comic Sans MS',cursive;
+  --radius:22px; --radius-s:14px;
+  --touch:44px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --field:#0A1021; --paper:#0E1528;
+    --ink:#EEF2FF; --ink-2:#BAC4E0; --ink-3:#9AA5C4;
+    --surface:rgba(34,44,74,.55); --surface-solid:#1A233F; --surface-2:rgba(255,255,255,.06);
+    --line:rgba(190,205,255,.16); --slot:rgba(255,255,255,.06); --slot-line:rgba(190,205,255,.42);
+    --grid:rgba(200,215,255,.035); --grid-major:rgba(200,215,255,.065);
+    --pen-red:#FF9A8B; --pen-green:#8BE3B1; --pen-blue:#A8C4FF; --focus:#A8C4FF;
+    --g-fill:linear-gradient(155deg,rgba(44,56,92,.6),rgba(22,30,54,.46));
+    --g-fill-hi:linear-gradient(155deg,rgba(56,70,112,.72),rgba(30,40,70,.6));
+    --g-edge:rgba(255,255,255,.14);
+    --g-spec:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -1px 0 rgba(0,0,0,.25);
+    --g-d1:0 18px 40px -24px rgba(0,0,0,.7); --g-d2:0 30px 60px -26px rgba(0,0,0,.8); --g-d3:0 40px 80px -28px rgba(0,0,0,.85);
+    --c-fill:rgba(255,255,255,.07); --c-edge:rgba(255,255,255,.15); --c-ring:rgba(0,0,0,.25);
+    --c-spec:inset 0 1px 0 rgba(255,255,255,.13); --c-drop:0 6px 14px -8px rgba(0,0,0,.6);
+    --k-fill:rgba(255,255,255,.1); --a-fill:rgba(255,255,255,.08);
+    --w-fill:rgba(0,0,0,.24); --w-inset:inset 0 2px 5px rgba(0,0,0,.45);
+    --tint:linear-gradient(180deg,#4F7BF2,#2D52C6); --tint-glow:0 10px 24px -10px rgba(79,123,242,.6);
+    --pools:
+      radial-gradient(44vmax 36vmax at 6% 8%, rgba(59,126,224,.34), transparent 70%),
+      radial-gradient(38vmax 30vmax at 96% 4%, rgba(197,81,178,.26), transparent 70%),
+      radial-gradient(46vmax 38vmax at 92% 92%, rgba(32,164,181,.26), transparent 70%),
+      radial-gradient(40vmax 34vmax at 6% 96%, rgba(243,139,42,.2), transparent 70%),
+      radial-gradient(34vmax 28vmax at 52% 48%, rgba(93,89,214,.2), transparent 72%);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --field:#0A1021; --paper:#0E1528;
+  --ink:#EEF2FF; --ink-2:#BAC4E0; --ink-3:#9AA5C4;
+  --surface:rgba(34,44,74,.55); --surface-solid:#1A233F; --surface-2:rgba(255,255,255,.06);
+  --line:rgba(190,205,255,.16); --slot:rgba(255,255,255,.06); --slot-line:rgba(190,205,255,.42);
+  --grid:rgba(200,215,255,.035); --grid-major:rgba(200,215,255,.065);
+  --pen-red:#FF9A8B; --pen-green:#8BE3B1; --pen-blue:#A8C4FF; --focus:#A8C4FF;
+  --g-fill:linear-gradient(155deg,rgba(44,56,92,.6),rgba(22,30,54,.46));
+  --g-fill-hi:linear-gradient(155deg,rgba(56,70,112,.72),rgba(30,40,70,.6));
+  --g-edge:rgba(255,255,255,.14);
+  --g-spec:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -1px 0 rgba(0,0,0,.25);
+  --g-d1:0 18px 40px -24px rgba(0,0,0,.7); --g-d2:0 30px 60px -26px rgba(0,0,0,.8); --g-d3:0 40px 80px -28px rgba(0,0,0,.85);
+  --c-fill:rgba(255,255,255,.07); --c-edge:rgba(255,255,255,.15); --c-ring:rgba(0,0,0,.25);
+  --c-spec:inset 0 1px 0 rgba(255,255,255,.13); --c-drop:0 6px 14px -8px rgba(0,0,0,.6);
+  --k-fill:rgba(255,255,255,.1); --a-fill:rgba(255,255,255,.08);
+  --w-fill:rgba(0,0,0,.24); --w-inset:inset 0 2px 5px rgba(0,0,0,.45);
+  --tint:linear-gradient(180deg,#4F7BF2,#2D52C6); --tint-glow:0 10px 24px -10px rgba(79,123,242,.6);
+  --pools:
+    radial-gradient(44vmax 36vmax at 6% 8%, rgba(59,126,224,.34), transparent 70%),
+    radial-gradient(38vmax 30vmax at 96% 4%, rgba(197,81,178,.26), transparent 70%),
+    radial-gradient(46vmax 38vmax at 92% 92%, rgba(32,164,181,.26), transparent 70%),
+    radial-gradient(40vmax 34vmax at 6% 96%, rgba(243,139,42,.2), transparent 70%),
+    radial-gradient(34vmax 28vmax at 52% 48%, rgba(93,89,214,.2), transparent 72%);
+  color-scheme:dark;
+}
+
+/* fonts: self-hosted, same files as FQ2 */
+@font-face{font-family:'Lexend';font-style:normal;font-weight:400 800;font-display:swap;src:url('/world/fonts/lexend-latin.woff2') format('woff2')}
+@font-face{font-family:'Patrick Hand';font-style:normal;font-weight:400;font-display:swap;src:url('/world/fonts/patrick-hand-latin.woff2') format('woff2')}
+@font-face{font-family:'OpenDyslexic';font-style:normal;font-weight:400;font-display:swap;src:url('/world/fonts/OpenDyslexic-Regular.woff2') format('woff2')}
+@font-face{font-family:'OpenDyslexic';font-style:normal;font-weight:700;font-display:swap;src:url('/world/fonts/OpenDyslexic-Bold.woff2') format('woff2')}
+:root[data-font="dyslexic"]{--sans:'OpenDyslexic','Lexend',system-ui,sans-serif}
+
+/* the light table: static color pools + a faint grid */
+html{height:100%;-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100%;color:var(--ink);font-family:var(--sans);font-size:1.0625rem;line-height:1.5;background:var(--field);overflow-x:hidden}
+body::before,body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none}
+body::before{background:var(--pools)}
+body::after{
+  background-image:
+    linear-gradient(var(--grid-major) 1px,transparent 1px),linear-gradient(90deg,var(--grid-major) 1px,transparent 1px),
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:120px 120px,120px 120px,24px 24px,24px 24px;
+  -webkit-mask-image:radial-gradient(ellipse 85% 75% at 50% 40%,#000 40%,transparent 100%);
+  mask-image:radial-gradient(ellipse 85% 75% at 50% 40%,#000 40%,transparent 100%);
+}
+*,*::before,*::after{box-sizing:border-box}
+button,input{font-family:inherit;font-size:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* glass surfaces */
+.glass{background:var(--g-fill);border:1px solid var(--g-edge);border-radius:var(--radius);box-shadow:var(--g-spec),var(--g-d1);-webkit-backdrop-filter:var(--g-blur);backdrop-filter:var(--g-blur)}
+.glass.work{background:var(--g-fill-hi);box-shadow:var(--g-spec),var(--g-d2)}
+.glass.held{background:var(--g-fill-hi);box-shadow:var(--g-spec),var(--g-d3)}
+.chip,.btn,.opt{background:var(--c-fill);border:1px solid var(--c-edge);box-shadow:var(--c-spec),0 0 0 1px var(--c-ring),var(--c-drop);color:var(--ink)}
+.btn.primary,.chip[aria-pressed="true"],.toast{background:var(--tint);color:#fff;border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 -2px 0 rgba(0,0,0,.18),var(--tint-glow)}
+.well{background:var(--w-fill);border:1.5px dashed var(--slot-line);box-shadow:var(--w-inset)}
+
+/* fallbacks: no backdrop support, or Reduce Transparency */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .glass{background:var(--surface-solid)}
+}
+@media (prefers-reduced-transparency: reduce){
+  .glass,.scrim{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .glass{background:var(--surface-solid)}
+  body::before{opacity:.5}
+}
+:root[data-transparency="reduce"] .glass,:root[data-transparency="reduce"] .scrim{-webkit-backdrop-filter:none;backdrop-filter:none}
+:root[data-transparency="reduce"] .glass{background:var(--surface-solid)}
+:root[data-transparency="reduce"] body::before{opacity:.5}
+
+/* motion: the WAAPI calls check this too; CSS transitions are cut here */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+}
+:root[data-motion="reduce"] *,:root[data-motion="reduce"] *::before,:root[data-motion="reduce"] *::after{animation-duration:.001ms !important;transition-duration:.001ms !important}

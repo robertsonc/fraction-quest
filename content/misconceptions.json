@@ -1,0 +1,14 @@
+[
+  { "id": "scales-numerator-only", "skills": ["nf.equiv"], "labelKey": "mis.scales-numerator-only.label", "fixKey": "mis.scales-numerator-only.fix", "microLesson": "micro.nf.equiv.same-number" },
+  { "id": "scales-denominator-only", "skills": ["nf.equiv"], "labelKey": "mis.scales-denominator-only.label", "fixKey": "mis.scales-denominator-only.fix", "microLesson": "micro.nf.equiv.same-number-bottom" },
+  { "id": "adds-to-both", "skills": ["nf.equiv"], "labelKey": "mis.adds-to-both.label", "fixKey": "mis.adds-to-both.fix", "microLesson": "micro.nf.equiv.multiply-not-add" },
+  { "id": "different-scale-factors", "skills": ["nf.equiv"], "labelKey": "mis.different-scale-factors.label", "fixKey": "mis.different-scale-factors.fix", "microLesson": "micro.nf.equiv.same-number" },
+  { "id": "whole-number-bias", "skills": ["nf.equiv"], "labelKey": "mis.whole-number-bias.label", "fixKey": "mis.whole-number-bias.fix", "microLesson": "micro.nf.equiv.looks-different" },
+  { "id": "copies-fraction", "skills": ["nf.equiv"], "labelKey": "mis.copies-fraction.label", "fixKey": "mis.copies-fraction.fix", "microLesson": "micro.nf.equiv" },
+  { "id": "counts-ticks-not-gaps", "skills": ["nf.equiv", "nf.meaning"], "labelKey": "mis.counts-ticks-not-gaps.label", "fixKey": "mis.counts-ticks-not-gaps.fix", "microLesson": "micro.nf.meaning" },
+  { "id": "arith-slip", "skills": ["nf.equiv", "ops.multfacts"], "labelKey": "mis.arith-slip.label", "fixKey": "mis.arith-slip.fix", "microLesson": null },
+  { "id": "part-over-part", "skills": ["nf.meaning"], "labelKey": "mis.part-over-part.label", "fixKey": "mis.part-over-part.fix", "microLesson": "micro.nf.meaning" },
+  { "id": "inverted-fraction", "skills": ["nf.meaning"], "labelKey": "mis.inverted-fraction.label", "fixKey": "mis.inverted-fraction.fix", "microLesson": "micro.nf.meaning" },
+  { "id": "adds-instead", "skills": ["ops.multfacts"], "labelKey": "mis.adds-instead.label", "fixKey": "mis.adds-instead.fix", "microLesson": "micro.ops.multfacts" },
+  { "id": "off-by-one-group", "skills": ["ops.multfacts"], "labelKey": "mis.off-by-one-group.label", "fixKey": "mis.off-by-one-group.fix", "microLesson": "micro.ops.multfacts" }
+]

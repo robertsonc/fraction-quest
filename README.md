@@ -54,6 +54,34 @@ either rename it back in the Cloudflare dashboard or change the `branches:` filt
 Dependabot opens weekly PRs for the GitHub Actions and for wrangler. wrangler is pinned exactly in
 `package.json`, so each bump is a reviewed PR with a preview deploy rather than an implicit upgrade.
 
+## Fraction Quest Universe (`universe/`, served at `/world/`)
+
+The next generation of the app: a world map, guided lessons with animated walkthroughs, an adaptive engine that
+drops to prerequisites when a learner struggles, spaced review, several learner profiles, and a coach view. The
+plan and the decisions behind it are in `DESIGN.md`. During Phase 1 it lives beside the classic quest: the classic
+app keeps `/`, the Universe is built from `universe/` into `public/world/` by `build_cf.py`.
+
+| Path | What it is |
+| --- | --- |
+| `content/` | Data only: worlds, skills and their prerequisite edges, lessons and micro-lessons, item templates, the misconception catalog, user-facing strings, the story cast and a denylist of licensed names. New worlds are added here, not in code |
+| `universe/src/engine/` | Pure math engine, no DOM: exact rational arithmetic, seeded item generators with step traces, misconception predicates, the adaptive reducer, mastery and spaced review |
+| `universe/src/store/` | IndexedDB with a versioned schema, migrations, recovery from a corrupted or foreign database, and an in-memory fallback |
+| `universe/src/ui/` | Screens and components in plain TypeScript: profiles, map, skill, lesson flow, review, coach view, settings, the on-screen keypad and the SVG scene renderer |
+| `universe/src/walkthrough/` | Plays an engine step trace as an animated walkthrough (Web Animations API, stills under reduced motion) |
+| `universe/test/` | Vitest unit and property tests (fast-check against an independent BigInt oracle), a jsdom check that every walkthrough ends on the engine's answer, and Playwright end-to-end runs on iPad and laptop viewports |
+
+```bash
+cd universe
+npm ci --ignore-scripts        # exact pins, no postinstall scripts
+npm run check                  # typecheck, unit and property tests (2000 cases per item template), string scan
+npm run build                  # dist/ with a stamped service worker
+npm run test:e2e               # Playwright: perfect, guessing, misconception, depth-2 and spaced-review runs, axe, zero console errors
+npm run dev                    # http://localhost:5173/world/
+```
+
+`npm run test:e2e` downloads nothing when `PW_CHROMIUM_PATH` points at an installed Chromium. Open the app with
+`?test=1&seed=<n>` to get deterministic items and the `window.__fqu` test hooks; they are not present otherwise.
+
 ## Start page
 
 `/start/` is the front door for someone new: two cards, "Learn / Explore" (links to every Learn page and the

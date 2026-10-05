@@ -1,0 +1,183 @@
+{
+  "lessons": [
+    {
+      "id": "lesson.nf.equiv",
+      "skillId": "nf.equiv",
+      "hook": {
+        "templateId": "equiv.missing-numerator.area.small",
+        "captionKey": "lesson.hook.nf.equiv",
+        "durationMs": 14000
+      },
+      "walkthrough": {
+        "templateId": "equiv.missing-numerator.area.small",
+        "reps": [
+          "area",
+          "bar"
+        ]
+      },
+      "guided": {
+        "templates": [
+          "equiv.missing-numerator.area.small",
+          "equiv.missing-numerator.bar",
+          "equiv.missing-denominator.area.small"
+        ],
+        "count": 3
+      },
+      "independent": {
+        "templates": [
+          "equiv.missing-numerator.area",
+          "equiv.missing-denominator.area",
+          "equiv.missing-part.line",
+          "equiv.is-equivalent.area",
+          "equiv.find-pair.set",
+          "equiv.missing-part.symbol"
+        ],
+        "count": 4
+      },
+      "check": {
+        "templates": [
+          "equiv.missing-numerator.bar",
+          "equiv.is-equivalent.symbol",
+          "equiv.missing-part.line",
+          "equiv.find-pair.symbol"
+        ],
+        "count": 4
+      }
+    }
+  ],
+  "microLessons": [
+    {
+      "id": "micro.nf.equiv",
+      "skillId": "nf.equiv",
+      "misconceptionId": null,
+      "titleKey": "micro.nf.equiv.title",
+      "walkthrough": {
+        "templateId": "equiv.missing-numerator.area.small",
+        "reps": [
+          "area"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "equiv.missing-numerator.area",
+          "equiv.missing-denominator.area",
+          "equiv.is-equivalent.area"
+        ]
+      }
+    },
+    {
+      "id": "micro.nf.equiv.same-number",
+      "skillId": "nf.equiv",
+      "misconceptionId": "scales-numerator-only",
+      "titleKey": "micro.nf.equiv.same-number.title",
+      "walkthrough": {
+        "templateId": "equiv.missing-denominator.area.small",
+        "reps": [
+          "area"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "equiv.missing-denominator.area",
+          "equiv.is-equivalent.area",
+          "equiv.missing-numerator.bar"
+        ]
+      }
+    },
+    {
+      "id": "micro.nf.equiv.same-number-bottom",
+      "skillId": "nf.equiv",
+      "misconceptionId": "scales-denominator-only",
+      "titleKey": "micro.nf.equiv.same-number.title",
+      "walkthrough": {
+        "templateId": "equiv.missing-numerator.area.small",
+        "reps": [
+          "area"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "equiv.missing-numerator.area",
+          "equiv.is-equivalent.area",
+          "equiv.missing-numerator.bar"
+        ]
+      }
+    },
+    {
+      "id": "micro.nf.equiv.multiply-not-add",
+      "skillId": "nf.equiv",
+      "misconceptionId": "adds-to-both",
+      "titleKey": "micro.nf.equiv.multiply-not-add.title",
+      "walkthrough": {
+        "templateId": "equiv.is-equivalent.area.small",
+        "reps": [
+          "area"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "equiv.is-equivalent.area",
+          "equiv.missing-numerator.area",
+          "equiv.missing-denominator.area"
+        ]
+      }
+    },
+    {
+      "id": "micro.nf.equiv.looks-different",
+      "skillId": "nf.equiv",
+      "misconceptionId": "whole-number-bias",
+      "titleKey": "micro.nf.equiv.looks-different.title",
+      "walkthrough": {
+        "templateId": "equiv.is-equivalent.area.small",
+        "reps": [
+          "area"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "equiv.is-equivalent.area",
+          "equiv.is-equivalent.symbol",
+          "equiv.missing-numerator.area"
+        ]
+      }
+    },
+    {
+      "id": "micro.nf.meaning",
+      "skillId": "nf.meaning",
+      "misconceptionId": null,
+      "titleKey": "micro.nf.meaning.title",
+      "walkthrough": {
+        "templateId": "meaning.name-fraction.area",
+        "reps": [
+          "area"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "meaning.name-fraction.area",
+          "meaning.name-fraction.set",
+          "meaning.name-fraction.line"
+        ]
+      }
+    },
+    {
+      "id": "micro.ops.multfacts",
+      "skillId": "ops.multfacts",
+      "misconceptionId": null,
+      "titleKey": "micro.ops.multfacts.title",
+      "walkthrough": {
+        "templateId": "ops.mult-fact.set",
+        "reps": [
+          "set"
+        ]
+      },
+      "quickCheck": {
+        "templates": [
+          "ops.mult-fact.set",
+          "ops.mult-fact.symbol",
+          "ops.mult-fact.symbol"
+        ]
+      }
+    }
+  ]
+}
