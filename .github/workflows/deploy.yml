@@ -43,6 +43,26 @@ jobs:
       - name: Install wrangler (pinned in package-lock.json)
         run: npm ci --ignore-scripts
 
+      - name: Install universe dependencies (pinned in universe/package-lock.json)
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: universe
+
+      - name: Universe checks (typecheck, unit and property tests, string scan)
+        run: npm run check
+        working-directory: universe
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: universe
+
+      - name: Build universe
+        run: npm run build
+        working-directory: universe
+
+      - name: Universe end-to-end tests (iPad and laptop viewports)
+        run: npm run test:e2e
+        working-directory: universe
+
       - name: Build public/
         run: python3 build_cf.py
 

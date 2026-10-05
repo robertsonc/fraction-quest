@@ -1,0 +1,106 @@
+[
+  {
+    "id": "nf.meaning",
+    "world": "nf",
+    "title": "What a fraction means",
+    "ccss": [
+      "3.NF.A.1"
+    ],
+    "prereqs": [],
+    "representations": [
+      "area",
+      "line",
+      "set"
+    ],
+    "lesson": null,
+    "microLesson": "micro.nf.meaning",
+    "itemTemplates": [
+      "meaning.name-fraction.area",
+      "meaning.name-fraction.line",
+      "meaning.name-fraction.set"
+    ],
+    "misconceptions": [
+      "part-over-part",
+      "inverted-fraction",
+      "counts-ticks-not-gaps"
+    ],
+    "x": 0.18,
+    "y": 0.95,
+    "status": "micro-only"
+  },
+  {
+    "id": "ops.multfacts",
+    "world": "nf",
+    "title": "Multiplication facts",
+    "ccss": [
+      "3.OA.C.7"
+    ],
+    "prereqs": [],
+    "representations": [
+      "set",
+      "symbol"
+    ],
+    "lesson": null,
+    "microLesson": "micro.ops.multfacts",
+    "itemTemplates": [
+      "ops.mult-fact.symbol",
+      "ops.mult-fact.set"
+    ],
+    "misconceptions": [
+      "adds-instead",
+      "off-by-one-group",
+      "arith-slip"
+    ],
+    "x": 0.82,
+    "y": 0.95,
+    "status": "micro-only"
+  },
+  {
+    "id": "nf.equiv",
+    "world": "nf",
+    "title": "Equivalent fractions",
+    "ccss": [
+      "4.NF.A.1"
+    ],
+    "prereqs": [
+      "nf.meaning",
+      "ops.multfacts"
+    ],
+    "representations": [
+      "area",
+      "bar",
+      "line",
+      "set",
+      "symbol"
+    ],
+    "lesson": "lesson.nf.equiv",
+    "microLesson": "micro.nf.equiv",
+    "itemTemplates": [
+      "equiv.missing-numerator.area",
+      "equiv.missing-denominator.area",
+      "equiv.missing-numerator.bar",
+      "equiv.missing-part.line",
+      "equiv.missing-part.symbol",
+      "equiv.is-equivalent.area",
+      "equiv.is-equivalent.symbol",
+      "equiv.find-pair.set",
+      "equiv.find-pair.symbol",
+      "equiv.missing-numerator.area.small",
+      "equiv.missing-denominator.area.small",
+      "equiv.is-equivalent.area.small"
+    ],
+    "misconceptions": [
+      "scales-numerator-only",
+      "scales-denominator-only",
+      "adds-to-both",
+      "different-scale-factors",
+      "whole-number-bias",
+      "copies-fraction",
+      "counts-ticks-not-gaps",
+      "arith-slip"
+    ],
+    "x": 0.5,
+    "y": 0.3,
+    "status": "open"
+  }
+]
