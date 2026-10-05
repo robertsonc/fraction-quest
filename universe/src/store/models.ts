@@ -19,7 +19,8 @@ export const DEFAULT_SETTINGS: Settings = {
   readAloud: false,
   dyslexiaFont: false,
   theme: 'auto',
-  reducedTransparency: false,
+  /** Solid panels by default; the see-through glass look is opt-in (owner decision, Phase 1 review). */
+  reducedTransparency: true,
   reducedMotion: 'auto',
   sound: true,
 };

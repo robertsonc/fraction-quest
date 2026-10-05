@@ -8,7 +8,13 @@ test.describe('platform', () => {
     await page.fill('#nick', 'Priya');
     await page.click('[data-action="create"]');
     await expect(page.locator('.who')).toContainText('Priya');
+    // Solid panels are the default; the glass look is opt-in.
+    await expect(page.locator('html')).toHaveAttribute('data-transparency', 'reduce');
     await page.click('[data-action="settings"]');
+    await expect(page.locator('#set-reducedTransparency')).toBeChecked();
+    await page.uncheck('#set-reducedTransparency');
+    await expect(page.locator('html')).not.toHaveAttribute('data-transparency', 'reduce');
+    await page.check('#set-reducedTransparency');
     await page.check('#set-dyslexiaFont');
     await page.check('#set-readAloud');
     await page.selectOption('#set-theme', 'dark');

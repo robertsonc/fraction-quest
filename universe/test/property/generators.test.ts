@@ -83,7 +83,11 @@ describe.each(SPECS.map((s) => [s.id, s] as const))('template %s', (_id, spec) =
         // Whatever detect reports must be one of the matching predicates (priority order decides).
         expect(all).toContain(detect(item, wrong));
       }), { numRuns: RUNS });
-      expect(applied).toBeGreaterThan(0);
+      // Coverage is checked on a fixed sweep of seeds, not on fast-check's random sample, so a rare
+      // misconception (one that only applies to some item shapes) cannot make a low-run local pass flaky.
+      const applies = Array.from({ length: 2000 }, (_, i) => i * 7919 + 1).some((seed) => produce(mis, generate(spec, seed)) !== null);
+      expect(applies, `${mis} never applies to ${spec.id}`).toBe(true);
+      if (applied === 0) console.warn(`[coverage] ${spec.id} / ${mis}: no application in ${RUNS} random runs`);
       if (overlaps > 0) {
         // Deliberate ambiguity: reported, not failed (DESIGN.md 3.2).
         console.warn(`[collision] ${spec.id} / ${mis}: ${overlaps} of ${applied} wrong answers also match another misconception`);

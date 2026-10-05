@@ -678,6 +678,9 @@ this document.
   the lesson moves it to `learning` at the hook and to `practice` or `mastered` after the check.
 - **Keypad reveal.** FQ2's scroll-the-prompt-above-the-keypad logic was ported after the iPad
   e2e run showed the on-screen keypad covering the Check button.
+- **Solid panels are the default.** After the first review of the preview, the see-through glass
+  (backdrop blur) became opt-in: `reducedTransparency` defaults to true, the "Solid panels" toggle
+  turns it off. The light table, tiles and tints are unchanged; only the panel surfaces are opaque.
 - **Route changes reset scroll and hide the keypad.** Found by an instrumented e2e run: after a
   practice item scrolled the page for the keypad, the next screen rendered with the top bar off
   screen and the keypad still up.
